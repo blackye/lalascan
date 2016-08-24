@@ -61,5 +61,8 @@ docs/_build/
 # mac
 .DS_Store
 
+#pycharm
+.idea/
+
 #policy
 scanpolicy/
