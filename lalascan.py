@@ -76,6 +76,7 @@ def initOptions(inputOptions = AttribDict()):
 
         conf.plugins = inputOptions.plugin
 
+        conf.targets = []
     except LalascanDataException:
         logger.log(CUSTOM_LOGGING.ERROR, "init args option error!")
 
