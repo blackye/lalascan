@@ -11,3 +11,4 @@ easywebdav
 pyquery
 PyYAML
 re2
+celery

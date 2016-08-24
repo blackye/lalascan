@@ -3,8 +3,8 @@
 
 from lib.config import REDIS_PWD
 
-BROKER_URL = 'redis://%s@172.16.203.129:6379/8' % REDIS_PWD
-CELERY_RESULT_BACKEND = 'redis://%s@172.16.203.129:6379/9' % REDIS_PWD
+BROKER_URL = 'redis://:%s@172.16.203.129:6379/8' % REDIS_PWD
+CELERY_RESULT_BACKEND = 'redis://:%s@172.16.203.129:6379/9' % REDIS_PWD
 
 # Tasks 位于 worker.py 中
 CELERY_IMPORTS = ('wvs_tasks', )

@@ -79,12 +79,13 @@ def wait_parse_result(keys):
     while True:
         #TODO timeout is need
         try:
-            _ = r.get(keys)
-            if _ is not None:
-                spider_content = eval(_)
-                if isinstance(spider_content, dict) and spider_content.haskey('GET') and spider_content['GET'] is not None:
-                    spider_json_content = spider_content['GET']
-                    break
+			_ = r.get(keys)
+			if _ is not None:
+				spider_json_content = _
+				r.delete(keys)
+				break
+			else:
+				time.sleep(2)
         except Exception:
             time.sleep(1)
 
