@@ -1,0 +1,13 @@
+futures
+argparse
+beautifulsoup4
+netaddr
+python-nmap
+dnspython
+requests
+paramiko
+pymongo
+easywebdav
+pyquery
+PyYAML
+re2
