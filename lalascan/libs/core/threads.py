@@ -4,6 +4,8 @@
 __author__ = 'BlackYe.'
 
 from lalascan.libs.core.plugin import PluginBase
+from lalascan.libs.core.globaldata import vulresult
+
 
 import multiprocessing
 import multiprocessing.pool
@@ -42,7 +44,8 @@ def plugin_run_thread(plugin_name, pluginheader, info):
     #print '1'
     p = pluginheader
     print type(p)
-    p.run_plugin(info)
+    global vulresult
+    vulresult.append(p.run_plugin(info))
 
 
 def execute_plugin(register_plugins, m_resource):

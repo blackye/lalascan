@@ -5,7 +5,7 @@ __author__ = 'BlackYe.'
 
 from lalascan.libs.core.plugin import PluginBase
 from lalascan.libs.core.pluginregister import reg_instance_plugin
-from lalascan.libs.core.globaldata import logger
+from lalascan.libs.core.globaldata import logger, conf
 
 from lalascan.libs.net.web_utils import parse_url, argument_query, get_request
 from lalascan.libs.net.web_mutants import payload_muntants
@@ -14,7 +14,7 @@ from lalascan.data.resource.url import URL
 from lalascan.utils.text_utils import to_utf8
 
 
-#from golismero.api.data.vuln.injection.xss import XSS
+from lalascan.data.vuln.vulnerability import WebVulnerability
 
 from scanpolicy.policy import xss_reflection_detect_test_cases
 from random import randint
@@ -68,19 +68,9 @@ class ReflectXSSPlugin(PluginBase):
                 key = to_utf8(k)
                 value = to_utf8(v)
 
-                if self.xss_detect(m_url, method = 'GET', k = key, v = value):
-
-                    url = URL(url = m_url.url,
-                          method = 'GET',
-                          post_params = None,
-                          referer = m_url.referer)
-
-                    print '[+] found reflected xss!'
-                    #vul = XSS(url, vulnerable_params = {"injection":"xxxxxx"}, injection_point = XSS.INJECTION_POINT_URL, injection_type = "XSS")
-
-                    #vul.description += "fuck"
-
-                    #m_return.append()
+                ret, vul = self.xss_detect(m_url, method = 'GET', k = key, v = value)
+                if ret:
+                    m_return.append(vul)
                     break
 
                 #return m_return
@@ -90,6 +80,7 @@ class ReflectXSSPlugin(PluginBase):
 
         # Send the results
         return m_return
+
 
     def xss_detect(self, url, method = 'GET',  **kwargs):
 
@@ -107,10 +98,10 @@ class ReflectXSSPlugin(PluginBase):
 
             rand_num = 900000000 + randint(1, 9999999)
             xss_payload = xss_test_case_dict['input'].replace('rndstr', str(rand_num))
-            xss_resp = payload_muntants(url, payload = {'k': k , 'pos': 1, 'payload':xss_payload, 'type': 1}, bmethod = method)
+            xss_resp, payload_resource = payload_muntants(url, payload = {'k': k , 'pos': 1, 'payload':xss_payload, 'type': 1}, bmethod = method)
 
             if xss_resp is None or xss_resp.data is None:
-                return False
+                return False, None
 
             tags_list , flags_list, targets_list = self._get_tags_flags(xss_test_case_dict['tag'], xss_test_case_dict['flag'], xss_test_case_dict['target'])
             flag_type = xss_test_case_dict['flag_type']
@@ -152,13 +143,15 @@ class ReflectXSSPlugin(PluginBase):
 
                     except AssertionError:
                         logger.log_verbose("targets list length must bu one!")
-                        return False
+                        return False, None
 
                 if len(result) > 0:
-                    logger.log_verbose('[+] found reflect xss vulnerable!')
-                    return True
 
-        return False
+                    vul = WebVulnerability(target = payload_resource, vulparam_point = k, method = method, payload = xss_payload, injection_type = "XSS")
+                    logger.log_success('[!+] found %s reflect xss vulnerable!' % payload_resource.url)
+                    return True, vul
+
+        return False, None
 
 
     def _get_tags_flags(self, tags, flags, targets):

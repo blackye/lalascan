@@ -18,6 +18,8 @@ logger = ScanLog()
 conf = AttribDict()
 conf.audit_scope = AttribDict()
 
+vulresult = []
+
 # Dictionary storing
 # (1)targets, (2)registeredPocs, (3) bruteMode
 # (4)results, (5)pocFiles

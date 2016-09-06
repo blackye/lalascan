@@ -201,12 +201,13 @@ class TextReport():
                     print >>self.__fd, ""
             '''
 
-            for i in range(1):
-                table = Texttable()
+            table = Texttable()
+            table.add_row(["Vul Type", "Vul Url", "Parameter", "Method", "Risk"])
 
-                table.add_rows([ ["Vul Type", "Vul Url", "Parameter", "Method", "Risk"],
-                     ["SQL_INJECT", 1050 * '*', "a = 1", "POST", "HIGH"],
-                     ["REFLECT_XSS", 1, "b=1", "GET", "LOW"] ])
+            print conf.vulresult, len(conf.vulresult)
+            for _ in conf.vulresult:
+                table.add_row(
+                     ["SQL_INJECT", 1050 * '*', "a = 1", "POST", "HIGH"])
 
 
                 self.__fix_vul_table_width(table)

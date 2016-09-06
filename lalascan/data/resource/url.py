@@ -205,7 +205,6 @@ class URL(_AbstractURL):
                         for (k, v) in sorted(url_params.iteritems())
                     )
                     url = url + '?' + query_param
-                    print url
 
         # Save the properties.
         self.__method      = method

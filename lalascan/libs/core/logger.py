@@ -49,7 +49,7 @@ LOGGER.setLevel(CUSTOM_LOGGING.WARNING)
 class ScanLog(object):
 
     def log_verbose(self, msg):
-        LOGGER.log(CUSTOM_LOGGING.SYSINFO,msg)
+        LOGGER.log(CUSTOM_LOGGING.SYSINFO ,msg)
 
     def log_warning(self, msg):
         LOGGER.log(CUSTOM_LOGGING.WARNING, msg)

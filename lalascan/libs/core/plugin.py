@@ -5,6 +5,7 @@ __author__ = 'BlackYe.'
 
 from lalascan.api.exception import LalascanNotImplementedError
 from lalascan.data.resource import Data
+from lalascan.libs.core.globaldata import conf
 
 from inspect import isclass
 
@@ -43,6 +44,7 @@ class PluginBase(object):
 
                 # Call the plugin.
                 result = self.run(data)
+                return result
 
             except LalascanNotImplementedError:
                 pass
