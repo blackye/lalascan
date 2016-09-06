@@ -24,11 +24,7 @@ import re
 import imp
 import marshal
 
-conf.plugin = "sqli,reflect_xss"
-
-
 class PluginManager(object):
-
 
     def __init__(self, audit = None):
 

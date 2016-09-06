@@ -14,11 +14,12 @@ __all__ = [
 ]
 
 
-from . import NetworkOutOfScope
+from ...api.exception import LalascanNetworkOutOfScope, LalascanNetworkException
 #from ..data import LocalDataCache, discard_data
 from ...utils.text_utils import generate_random_string, split_first, to_utf8
 #from ..text.matching_analyzer import get_diff_ratio
 from ..core.common import json_decode, json_encode
+from ..core.globaldata import logger
 
 from BeautifulSoup import BeautifulSoup
 from copy import deepcopy
@@ -32,7 +33,7 @@ from urllib import quote, quote_plus, unquote, unquote_plus
 from urlparse import urljoin as original_urljoin
 from warnings import warn
 
-import re
+import re, time
 from urlparse import urlparse
 
 #------------------------------------------------------------------------------
@@ -125,17 +126,17 @@ def data_from_http_response(response):
 
         # HTML pages.
         if content_type == "text/html":
-            from ..data.information.html import HTML
+            from ...data.information.html import HTML
             data = HTML(response.data)
 
         # Plain text data.
         elif content_type.startswith("text/"):
-            from ..data.information.text import Text
+            from ...data.information.text import Text
             data = Text(response.data, response.content_type)
 
         # Image files.
         elif content_type.startswith("image/"):
-            from ..data.information.image import Image
+            from ...data.information.image import Image
             data = Image(response.data, response.content_type)
 
     # Catch errors and throw warnings instead.
@@ -145,7 +146,7 @@ def data_from_http_response(response):
 
     # Anything we don't know how to parse we treat as binary.
     if data is None:
-        from ..data.information.binary import Binary
+        from ...data.information.binary import Binary
         data = Binary(response.data, response.content_type)
 
     # Associate the data to the response.
@@ -154,169 +155,6 @@ def data_from_http_response(response):
     # Return the data.
     return data
 
-
-#------------------------------------------------------------------------------
-def download(url, callback = None, timeout = 10.0, allow_redirects = True,
-             allow_out_of_scope = False):
-    """
-    Download the file pointed to by the given URL.
-
-    An optional callback function may be given. It will be called just
-    before downloading the file, and receives the file size. If it
-    returns True the download proceeds, if it returns False it's
-    cancelled.
-
-    Example:
-
-        >>> from golismero.api.data.resource.url import URL
-        >>> from golismero.api.net.web_utils import download
-        >>> def decide(url, name, size, type):
-        ...     # 'url' is the URL for the download
-        ...     if url is not None:
-        ...         print "URL: %s" % url
-        ...     # 'name' is the suggested filename (None if not available)
-        ...     if name is not None:
-        ...         print "Name: %s" % name
-        ...     # 'size' is the file size (None if not available)
-        ...     if size is not None:
-        ...         print "Size: %d" % size
-        ...     # 'type' is the MIME type (None if not available)
-        ...     if type is not None:
-        ...         print "Type: %s" % type
-        ...     # Cancel download if not a web page
-        ...     if type != "text/html":
-        ...         return False
-        ...     # Cancel download if it's too large
-        ...     if size > 1000000:
-        ...         return False
-        ...     # Continue downloading
-        ...     return True
-        ...
-        >>> download(URL("http://www.example.com/index.html"), callback=decide)
-        URL: http://www.example.com/index.html
-        Name: index.html
-        Size: 1234
-        Type: text/html
-        <HTML identity=606489619590839a1c0ad662bcdc0189>
-        >>> download(URL("http://www.example.com/"), callback=decide)
-        URL: http://www.example.com/
-        Size: 1234
-        Type: text/html
-        <HTML identity=606489619590839a1c0ad662bcdc0189>
-        >>> print download(URL("http://www.example.com/big_file.iso"), callback=decide)
-        URL: http://www.example.com/big_file.iso
-        Name: big_file.iso
-        Size: 1234567890
-        Type: application/octet-stream
-        None
-
-    :param url: URL to download.
-    :type url: Url
-
-    :param callback: Callback function.
-    :type callback: callable
-
-    :param timeout: Timeout in seconds.
-            The minimum value is 0.5 and the maximum is 100.0. Any other values
-            will be silently converted to either one of them.
-    :type timeout: int | float
-
-    :param allow_redirects: True to follow redirections, False otherwise.
-    :type allow_redirects: bool
-
-    :param allow_out_of_scope: True to allow download of URLs out of scope,
-                               False otherwise.
-    :type allow_out_of_scope: bool
-
-    :returns: Downloaded data as an object of the GoLismero data model,
-              or None if cancelled.
-    :rtype: File | None
-
-    :raises NetworkOutOfScope: The resource is out of the audit scope.
-    :raises NetworkException: A network error occurred during download.
-    :raises NotImplementedError: The network protocol is not supported.
-    """
-
-    # Validate the callback type.
-    if callback is not None and not callable(callback):
-        raise TypeError(
-            "Expected callable (function, class, instance with __call__),"
-            " got %r instead" % type(callback)
-        )
-
-    # Autogenerate an URL object if a string is given (common mistake).
-    from ..data.resource.url import URL
-    if not isinstance(url, URL):
-        url = URL(url)
-        parsed = url.parsed_url
-        if not parsed.hostname or not parsed.scheme:
-            raise ValueError("Only absolute URLs must be used!")
-
-    # Validate the protocol.
-    # TODO: add support for FTP
-    scheme = url.parsed_url.scheme
-    if scheme not in ("http", "https"):
-        raise NotImplementedError("Protocol not supported: %s" % scheme)
-
-    # Validate the scope.
-    if not url.is_in_scope() and allow_out_of_scope is False:
-        raise NetworkOutOfScope("URL out of scope: %s" % url.url)
-
-    # Autogenerate the HTTP request object.
-    from ..config import Config
-    from ..data.information.http import HTTP_Request
-    request = HTTP_Request( url         = url.url,
-                            method      = url.method,
-                            post_data   = url.post_params,
-                            referer     = url.referer,
-                            user_agent  = Config.audit_config.user_agent)
-
-    # Prepare the callback.
-    if callback is None:
-        temp_callback = None
-    else:
-        def temp_callback(
-                    request, url, status_code, content_length, content_type):
-
-            # Abort if not successful.
-            if status_code != "200":
-                return False
-
-            # Get the name.
-            # TODO: parse the Content-Disposition header.
-            name = ParsedURL(url).filename
-            if not name:
-                name = request.parsed_url.filename
-                if not name:
-                    name = None
-
-            # Call the user-defined callback.
-            return callback(url, name, content_length, content_type)
-
-    # Send the request and get the response.
-
-    from .http import HTTP
-    response = HTTP.make_request(request,
-                                 callback = temp_callback,
-                                 timeout = timeout,
-                                 allow_redirects = allow_redirects,
-                                 allow_out_of_scope = allow_out_of_scope)
-
-    # If not aborted...
-    if response:
-
-        # Associate the URL to the request and the response.
-        request.add_resource(url)
-        response.add_resource(url)
-
-        # Extract the data from the response.
-        data = data_from_http_response(response)
-
-        # Associate the data to the URL.
-        data.add_resource(url)
-
-        # Return the data.
-        return data
 
 #---------------------------------------------------
 # Add By BlackYe
@@ -375,12 +213,27 @@ def get_request(url, timeout = 10.0, allow_redirects = True,
     # Send the request and get the response.
 
     from .http import HTTP
-    response = HTTP.make_request(request,
-                                 callback = None,
-                                 timeout = timeout,
-                                 allow_redirects = allow_redirects)
 
-    return response
+    retry_cnt = 0
+
+    while retry_cnt < 3:
+        try:
+            response = HTTP.make_request(request,
+                                         callback = None,
+                                         timeout = timeout,
+                                         allow_redirects = allow_redirects)
+
+            return response
+        except LalascanNetworkException, e:
+            retry_cnt += 1
+            time.sleep(0.5)
+            logger.log_error("Error while processing %r: %s" % (url.url, str(e)))
+        except LalascanNetworkOutOfScope, e:
+            retry_cnt += 1
+            time.sleep(0.5)
+            logger.log_error("Error while processing %r: %s" % (url.url, str(e)))
+
+    return None
 
 
 
@@ -396,7 +249,6 @@ def fix_url(url, base_url=None):
 
     Example:
 
-    >>> from golismero.api.net.web_utils import fix_url
     >>> fix_url("www.site.com")
     http://www.site.com
     >>> fix_url(url="/contact", base_url="www.site.com")
@@ -559,7 +411,6 @@ def split_hostname(hostname):
 
     For example:
 
-    >>> from golismero.api.net.web_utils import ParsedURL
     >>> d = ParsedURL("http://www.example.com/")
     >>> d.split_hostname()
     ('www', 'example', 'com')
@@ -588,7 +439,6 @@ def generate_error_page_url(url):
 
     Example:
 
-    >>> from golismero.api.net.web_utils import generate_error_page_url
     >>> generate_error_page_url("http://www.site.com/index.php")
     'http://www.site.com/index.php.19ds_8vjX'
 
@@ -626,63 +476,16 @@ def get_error_page(url):
 
     # Get the error page.
     try:
-        m_error_response = download(m_error_url)
+        m_error_response = get_request(m_error_url)
     except Exception:
         raise ValueError("Can't get error page.")
 
     # Mark the error page as discarded. Most likely the plugin won't need to
     # send this back as a result.
-    discard_data(m_error_response)
+    #discard_data(m_error_response)
 
     # Return the error page.
     return m_error_response
-
-
-#------------------------------------------------------------------------------
-def download_with_page_error_detection(url, error_page=None, similarity=0.65):
-    """
-    Download a web page trying to download a web page only if si different of error page.
-
-    Return None if page is very similar to error page.
-
-    Example:
-
-    >>> from golismero.api.net.web_utils import download_with_page_error_detection
-    >>> error_page = get_error_page("http://www.site.com/")
-    >>> download_with_error_detection("http://www.site.com/shop198202.php", error_page)
-    None
-d
-    :param url: Original URL. It must point to an existing document.
-    :type  url: str
-
-    :param error_page: Error to compare to. If not set, error page will be generated for this request.
-    :type error_page: str
-
-    :param similarity: percent value that express the similarity.
-    :type similarity: float
-
-    :return: page content or None
-    :rtype: str | None
-
-    :raises: ValueError
-    """
-    if not isinstance(error_page, basestring):
-        raise TypeError("Expected basestring, got '%s' instead" % type(error_page))
-
-    if similarity < 0 or similarity > 100.0:
-        raise ValueError("Similarity value must be between 0 - 100")
-
-    if not error_page:
-        error_page = get_error_page(url).raw_data
-
-    url_data = download(url).raw_data
-
-    ratio = get_diff_ratio(url_data, error_page)
-
-    if ratio >= similarity:
-        return url_data
-    else:
-        return None
 
 
 #------------------------------------------------------------------------------
@@ -801,7 +604,6 @@ class ParsedURL (object):
 
     Example:
 
-    >>> from golismero.api.net.web_utils import ParsedURL
     >>> url="http://user:pass@www.site.com/folder/index.php?param1=val1&b#anchor"
     >>> r = ParsedURL(url)
     >>> r.scheme
@@ -1050,7 +852,6 @@ class ParsedURL (object):
 
         By default every component of the path is tested:
 
-        >>> from golismero.api.net.web_utils import ParsedURL
         >>> d = ParsedURL("http://www.example.com/download.php/filename/file.pdf")
         >>> d.match_extension(".php")
         True
@@ -1061,7 +862,6 @@ class ParsedURL (object):
 
         However you can set the 'directory_allowed' to False to check only the last component:
 
-        >>> from golismero.api.net.web_utils import ParsedURL
         >>> d = ParsedURL("http://www.example.com/download.php/filename/file.pdf")
         >>> d.match_extension(".php", directory_allowed = True)
         True
@@ -1070,7 +870,6 @@ class ParsedURL (object):
 
         Double extension is supported, as it can come in handy when analyzing malware URLs:
 
-        >>> from golismero.api.net.web_utils import ParsedURL
         >>> d = ParsedURL("http://www.example.com/malicious.pdf.exe")
         >>> d.filebase
         'malicious.pdf'
@@ -1083,7 +882,6 @@ class ParsedURL (object):
 
         The double extension support can be disabled by setting the 'double_allowed' argument to False:
 
-        >>> from golismero.api.net.web_utils import ParsedURL
         >>> d = ParsedURL("http://www.example.com/malicious.pdf.exe")
         >>> d.match_extension(".pdf", double_allowed = True)
         True
@@ -1092,7 +890,6 @@ class ParsedURL (object):
 
         String comparisons are case insensitive by default:
 
-        >>> from golismero.api.net.web_utils import ParsedURL
         >>> d = ParsedURL("http://www.example.com/index.html")
         >>> d.match_extension(".html")
         True
@@ -1101,7 +898,6 @@ class ParsedURL (object):
 
         This too can be configured, just set 'case_insensitive' to False:
 
-        >>> from golismero.api.net.web_utils import ParsedURL
         >>> d = ParsedURL("http://www.example.com/index.html")
         >>> d.match_extension(".HTML", case_insensitive = True)
         True
@@ -1157,14 +953,12 @@ class ParsedURL (object):
 
         By default every component of the path is parsed:
 
-        >>> from golismero.api.net.web_utils import ParsedURL
         >>> d = ParsedURL("http://www.example.com/download.php/filename/file.pdf")
         >>> d.get_all_extensions()
         ['.php', '.pdf']
 
         However you can set the 'directory_allowed' to False to parse only the last component:
 
-        >>> from golismero.api.net.web_utils import ParsedURL
         >>> d = ParsedURL("http://www.example.com/download.php/filename/file.pdf")
         >>> d.get_all_extensions(directory_allowed = False)
         ['.pdf']
@@ -1173,7 +967,6 @@ class ParsedURL (object):
 
         Double extension is supported, as it can come in handy when analyzing malware URLs:
 
-        >>> from golismero.api.net.web_utils import ParsedURL
         >>> d = ParsedURL("http://www.example.com/malicious.pdf.exe")
         >>> d.filebase
         'malicious.pdf'
@@ -1184,7 +977,6 @@ class ParsedURL (object):
 
         The double extension support can be disabled by setting the 'double_allowed' argument to False:
 
-        >>> from golismero.api.net.web_utils import ParsedURL
         >>> d = ParsedURL("http://www.example.com/malicious.pdf.exe")
         >>> d.get_all_extensions(double_allowed = False)
         ['.exe']
@@ -1225,7 +1017,6 @@ class ParsedURL (object):
 
         For example:
 
-        >>> from golismero.api.net.web_utils import ParsedURL
         >>> d = ParsedURL("http://www.example.com/")
         >>> d.split_hostname()
         ('www', 'example', 'com')
@@ -1468,7 +1259,6 @@ class ParsedURL (object):
 
         Example:
 
-        >>> from golismero.api.net.web_utils import ParsedURL
         >>> d = ParsedURL("http://www.example.com/malicious.pdf.exe")
         >>> d.filename
         'malicious.pdf.exe'
@@ -1723,18 +1513,7 @@ class HTMLParser(object):
 
     Example:
 
-    >>> from golismero.api.net.web_utils import HTMLParser
-    >>> html_info = \"\"\"<html>
-    ... <head>
-    ...   <title>My sample page</title>
-    ... </head>
-    ... <body>
-    ...   <a href="http://www.mywebsitelink.com">Link 1</a>
-    ...   <p>
-    ...     <img src="/images/my_image.png" />
-    ...   </p>
-    ... </body>
-    ... </html>\"\"\"
+    >>> html_info = "<html>fuck!</html>"
     ...
     >>> html_parsed = HTMLParser(html_info)
     >>> html_parsed.links

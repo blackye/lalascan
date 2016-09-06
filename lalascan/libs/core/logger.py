@@ -60,3 +60,4 @@ class ScanLog(object):
     def log_error(self, msg):
         LOGGER.log(CUSTOM_LOGGING.ERROR, msg)
 
+

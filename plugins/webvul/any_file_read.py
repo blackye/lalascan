@@ -7,7 +7,7 @@ from lalascan.libs.core.plugin import PluginBase
 from lalascan.libs.core.pluginregister import reg_instance_plugin
 from lalascan.libs.core.globaldata import logger
 
-from lalascan.libs.net.web_utils import download, parse_url, argument_query, download, get_request
+from lalascan.libs.net.web_utils import parse_url, argument_query, get_request
 from lalascan.libs.net.web_mutants import payload_muntants
 
 from lalascan.data.resource.url import URL
@@ -77,7 +77,7 @@ class AnyFileReadPlugin(PluginBase):
                     p = payload_muntants(info, payload = {'k': k , 'pos': 1, 'payload':any_file_read_case['input'], 'type': 1}, bmethod = info.method)
                     __ = re.search(any_file_read_case['target'], p.data)
                     if __ is not None:
-                        print '[+] found any file read!'
+                        logger.log_verbose('[+] found any file read!')
                         return m_return
 
 
@@ -86,3 +86,5 @@ class AnyFileReadPlugin(PluginBase):
 
         # Send the results
         return m_return
+
+reg_instance_plugin(AnyFileReadPlugin)

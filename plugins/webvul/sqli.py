@@ -3,11 +3,13 @@
 
 __author__ = 'BlackYe.'
 
+from lalascan.api.exception import LalascanNetworkException
+
 from lalascan.libs.core.plugin import PluginBase
 from lalascan.libs.core.pluginregister import reg_instance_plugin
 from lalascan.libs.core.globaldata import logger
 
-from lalascan.libs.net.web_utils import download, parse_url, argument_query, download, get_request
+from lalascan.libs.net.web_utils import parse_url, argument_query, get_request
 from lalascan.libs.net.web_mutants import payload_muntants
 
 from lalascan.data.resource.url import URL
@@ -287,10 +289,13 @@ class SqliPlugin(PluginBase):
                     pass
 
                 if column_payload_rsp != None and column_payload_rsp != orig_resp_body:
+                    if (lower_index + 1)  == high_index:
+                        break
                     high_index = col
                 else:
                     if (lower_index + 1) == high_index:
                         table_column = lower_index
+                        print '*' * 50
                         break
                     elif lower_index == high_index:
                         table_column = high_index
@@ -436,8 +441,11 @@ class SqliPlugin(PluginBase):
                     return False
 
             def get_original_time():
-                p = get_request(url = url, allow_redirects= False)
-                return p.elapsed
+                try:
+                    p = get_request(url = url, allow_redirects= False)
+                    return p.elapsed
+                except LalascanNetworkException:
+                    return None
 
             bvul = True
 

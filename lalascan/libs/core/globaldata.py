@@ -16,6 +16,7 @@ logger = ScanLog()
 # object to share within function and classes command
 # line options and settings
 conf = AttribDict()
+conf.audit_scope = AttribDict()
 
 # Dictionary storing
 # (1)targets, (2)registeredPocs, (3) bruteMode

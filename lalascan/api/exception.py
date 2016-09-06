@@ -5,6 +5,18 @@
 Exception Base class
 """
 
+__all__ = ["LalascanBaseException",
+           "LalascanDataException",
+           "LalascanSystemException",
+           "LalascanThreadException",
+           "LalascanNetworkException",
+           "LalascanNetworkOutOfScope",
+           "LalascanNotImplementedError",
+           "LalascanTypeError",
+           "LalascanValueError",
+           "LalascanFileNotFoundException"]
+
+
 
 class LalascanBaseException(Exception):
     pass
@@ -17,6 +29,20 @@ class LalascanSystemException(LalascanBaseException):
 
 class LalascanThreadException(LalascanBaseException):
     pass
+
+class LalascanNetworkException(LalascanBaseException):
+    """
+    Network connection errors.
+    """
+    pass
+
+#------------------------------------------------------------------------------
+class LalascanNetworkOutOfScope(LalascanNetworkException):
+    """
+    Resource is out of audit scope.
+    """
+    pass
+
 
 class LalascanNotImplementedError(NotImplementedError):
     pass

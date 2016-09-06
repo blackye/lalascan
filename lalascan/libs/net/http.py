@@ -7,7 +7,7 @@ HTTP protocol API for GoLismero.
 
 __all__ = ["HTTP"]
 
-from . import NetworkException, NetworkOutOfScope
+from lalascan.api.exception import LalascanNetworkException, LalascanNetworkOutOfScope
 from .web_utils import detect_auth_method, get_auth_obj
 from ...data.http import HTTP_Request, HTTP_Response, HTTP_Raw_Request
 from ...data.resource.url import URL
@@ -197,7 +197,7 @@ class _HTTP(Singleton):
             t2 = time()
         except RequestException, e:
             #print str(e)
-            raise NetworkException(str(e))
+            raise LalascanNetworkException(str(e))
 
         try:
             # Get the response properties.
@@ -212,7 +212,7 @@ class _HTTP(Singleton):
             # If the final URL is different from the request URL,
             # abort if the new URL is out of scope.
             if url != request.url:
-                raise NetworkOutOfScope("URL out of scope: %s" % url)
+                raise LalascanNetworkOutOfScope("URL out of scope: %s" % url)
 
             # Call the user-defined callback, and cancel if requested.
             if callback is not None:
@@ -237,7 +237,7 @@ class _HTTP(Singleton):
                 data = resp.content
                 t4 = time()
             except RequestException, e:
-                raise NetworkException(str(e))
+                raise LalascanNetworkException(str(e))
 
             # Calculate the elapsed time.
             elapsed = (t2 - t1) + (t4 - t3)
@@ -380,13 +380,13 @@ class _HTTP(Singleton):
                     while True:
                         data = s.recv(1)
                         if not data:
-                            raise NetworkException(
+                            raise LalascanNetworkException(
                                 "Server has closed the connection")
                         raw_response.write(data)
                         if raw_response.getvalue().endswith("\r\n\r\n"):
                             break   # full HTTP headers received
                         if len(raw_response.getvalue()) > 65536:
-                            raise NetworkException(
+                            raise LalascanNetworkException(
                                 "Response headers too long")
 
                     # Stop the timer.
@@ -443,7 +443,7 @@ class _HTTP(Singleton):
 
         # On socket errors, send an exception.
         except error, e:
-            raise NetworkException(str(e))
+            raise LalascanNetworkException(str(e))
 
 
 #------------------------------------------------------------------------------

@@ -13,7 +13,6 @@ __author__ = 'BlackYe.'
 from lalascan.data.information.html import HTML
 from lalascan.data.resource.url import URL
 from lalascan.libs.core.globaldata import logger
-from lalascan.libs.net import NetworkException
 from lalascan.libs.net.scraper import extract_from_html, extract_from_text, extract_forms_from_html
 from lalascan.libs.net.web_utils import parse_url, argument_query, get_request
 from lalascan.utils.text_utils import to_utf8
@@ -72,22 +71,12 @@ def payload_muntants(url_info, payload = {}, bmethod = 'GET', exclude_cgi_suffix
         # TODO GET/POST param key need deal
         raise ValueError("GET/POST param key payload is not support!")
 
-    retry_cnt = 0
 
-    while retry_cnt < 3:
-        if bmethod == "GET":
-            m_resource_url_payload = URL(url = __.request_cgi, method = m_url_info.method, referer = m_url_info.referer, url_params= param_dict)
+    if bmethod == "GET":
+        m_resource_url_payload = URL(url = __.request_cgi, method = m_url_info.method, referer = m_url_info.referer, url_params= param_dict)
 
-        elif bmethod == "POST":
-            m_resource_url_payload = URL(url = __.request_cgi, method = m_url_info.method, referer = m_url_info.referer, post_params= param_dict)
+    elif bmethod == "POST":
+        m_resource_url_payload = URL(url = __.request_cgi, method = m_url_info.method, referer = m_url_info.referer, post_params= param_dict)
 
-        try:
-            p = get_request(url = m_resource_url_payload, allow_redirects=False, use_cache = use_cache, timeout = timeout)
-            return p
+    return get_request(url = m_resource_url_payload, allow_redirects=False, use_cache = use_cache, timeout = timeout)
 
-        except NetworkException, e:
-            retry_cnt += 1
-            time.sleep(0.5)
-            Logger.log_error_verbose("Error while processing %r: %s" % (m_resource_url_payload.url, str(e)))
-
-    return None
