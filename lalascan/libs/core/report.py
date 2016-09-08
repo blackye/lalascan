@@ -3,7 +3,7 @@
 
 __author__ = 'BlackYe.'
 
-from ...libs.core.globaldata import conf
+from ...libs.core.globaldata import conf, vulresult
 from ...data import Data
 from ...data.resource.domain import Domain
 from ...data.resource.ip import IP
@@ -201,14 +201,14 @@ class TextReport():
                     print >>self.__fd, ""
             '''
 
-            table = Texttable()
-            table.add_row(["Vul Type", "Vul Url", "Parameter", "Method", "Risk"])
+            if vulresult.qsize() > 0:
+                table = Texttable()
+                table.add_row(["Vul Type", "Vul Url", "Vul Parameter", "Payload", "Method", "Risk"])
 
-            print conf.vulresult, len(conf.vulresult)
-            for _ in conf.vulresult:
-                table.add_row(
-                     ["SQL_INJECT", 1050 * '*', "a = 1", "POST", "HIGH"])
-
+                while vulresult.qsize() > 0:
+                    _ = vulresult.get()
+                    table.add_row(
+                         [_.injection_type, _.url, _.vulparam_point, _.payload, _.vul_method, "HIGH"])
 
                 self.__fix_vul_table_width(table)
                 text = table.draw()
@@ -262,15 +262,16 @@ class TextReport():
         if self.__width > 0:
             if hasattr(table, "_hline_string"):
                 table._hline_string = "" # workaround for bug in texttable
-            assert all(len(x) == 5 for x in table._rows), table._rows
+            assert all(len(x) == 6 for x in table._rows), table._rows
             w = max( len(x[0]) for x in table._rows )
             if table._header:
-                assert len(table._header) == 5, len(table._header)
+                assert len(table._header) == 6, len(table._header)
                 w = max( w, len(table._header[0]) )
             m = w + 8
             if self.__width > m:
                 vulurl_width    = m + 40
                 parameter_width = 20
+                payload_width   = 10
                 method_width    = 10
                 risk_width      = 10
-                table.set_cols_width((w, vulurl_width, parameter_width, method_width, risk_width))
+                table.set_cols_width((w, vulurl_width, parameter_width, payload_width, method_width, risk_width))

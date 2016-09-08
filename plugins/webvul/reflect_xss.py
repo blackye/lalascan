@@ -5,7 +5,7 @@ __author__ = 'BlackYe.'
 
 from lalascan.libs.core.plugin import PluginBase
 from lalascan.libs.core.pluginregister import reg_instance_plugin
-from lalascan.libs.core.globaldata import logger, conf
+from lalascan.libs.core.globaldata import logger, conf, vulresult
 
 from lalascan.libs.net.web_utils import parse_url, argument_query, get_request
 from lalascan.libs.net.web_mutants import payload_muntants
@@ -61,22 +61,22 @@ class ReflectXSSPlugin(PluginBase):
             return m_return
 
         m_url = info
-
         if info.has_url_params:
-
             for k,v in m_url.url_params.iteritems():
                 key = to_utf8(k)
                 value = to_utf8(v)
 
-                ret, vul = self.xss_detect(m_url, method = 'GET', k = key, v = value)
-                if ret:
-                    m_return.append(vul)
+                if self.xss_detect(m_url, method = 'GET', k = key, v = value):
                     break
 
                 #return m_return
 
         if info.has_post_params:
-            print 'POST'
+            for k,v in m_url.post_params.iteritems():
+                key = to_utf8(k)
+                value = to_utf8(v)
+                if self.xss_detect(m_url, method = 'POST', k = key, v = value):
+                    break
 
         # Send the results
         return m_return
@@ -143,15 +143,17 @@ class ReflectXSSPlugin(PluginBase):
 
                     except AssertionError:
                         logger.log_verbose("targets list length must bu one!")
-                        return False, None
+                        return False
 
                 if len(result) > 0:
 
-                    vul = WebVulnerability(target = payload_resource, vulparam_point = k, method = method, payload = xss_payload, injection_type = "XSS")
-                    logger.log_success('[!+] found %s reflect xss vulnerable!' % payload_resource.url)
-                    return True, vul
+                    vul = WebVulnerability(target = payload_resource, vulparam_point = k, method = method, payload = xss_payload, injection_type = "REFLECT_XSS")
+                    vulresult.put_nowait(vul)
+                    logger.log_success('[!+>>>] found %s reflect xss vulnerable!' % payload_resource.url)
 
-        return False, None
+                    return True
+
+        return False
 
 
     def _get_tags_flags(self, tags, flags, targets):

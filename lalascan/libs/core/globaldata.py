@@ -9,7 +9,7 @@ global var data
 
 from lalascan.libs.core.logger import ScanLog
 from lalascan.data.datatype import AttribDict
-
+from multiprocessing import Queue
 # logger
 logger = ScanLog()
 
@@ -18,7 +18,8 @@ logger = ScanLog()
 conf = AttribDict()
 conf.audit_scope = AttribDict()
 
-vulresult = []
+#global multiprocessing result var
+vulresult = Queue()
 
 # Dictionary storing
 # (1)targets, (2)registeredPocs, (3) bruteMode

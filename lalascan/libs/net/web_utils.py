@@ -211,7 +211,6 @@ def get_request(url, timeout = 10.0, allow_redirects = True,
                             user_agent  = None)
 
     # Send the request and get the response.
-
     from .http import HTTP
 
     retry_cnt = 0

@@ -73,11 +73,12 @@ def payload_muntants(url_info, payload = {}, bmethod = 'GET', exclude_cgi_suffix
 
 
     if bmethod == "GET":
-        m_resource_url_payload = URL(url = __.request_cgi, method = m_url_info.method, referer = m_url_info.referer, url_params= param_dict)
+        m_resource_url_payload = URL(url = __.request_cgi, method = bmethod, referer = m_url_info.referer, url_params= param_dict, post_params = m_url_info.post_params)
+        logger.log_verbose('[+] %s' % (m_resource_url_payload.url))
 
     elif bmethod == "POST":
-        m_resource_url_payload = URL(url = __.request_cgi, method = m_url_info.method, referer = m_url_info.referer, post_params= param_dict)
+        m_resource_url_payload = URL(url = __.request_cgi, method = bmethod, referer = m_url_info.referer, url_params= m_url_info.url_params, post_params= param_dict)
+        logger.log_verbose('[+] %s %s' % (m_resource_url_payload.url, param_dict))
 
-    logger.log_verbose('[+] %s' % (m_resource_url_payload.url))
     return get_request(url = m_resource_url_payload, allow_redirects=False, use_cache = use_cache, timeout = timeout), m_resource_url_payload
 

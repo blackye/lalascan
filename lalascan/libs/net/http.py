@@ -254,8 +254,8 @@ class _HTTP(Singleton):
             )
 
             # Link it to the originating URL.
-            if url_obj is not None:
-                response.add_resource(url_obj)
+            #if url_obj is not None:
+            #    response.add_resource(url_obj)
 
 
             # Return the HTTP_Response object.

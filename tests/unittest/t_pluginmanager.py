@@ -24,9 +24,7 @@ from lalascan.libs.core.threads import plugin_run_thread, execute_plugin, MyReso
 from thirdparty_libs.oset.pyoset import oset
 
 conf.audit_config = None
-conf.plugin = "reflect_xss"
-conf.vulresult = oset()
-print id(conf.vulresult)
+conf.plugin = "sqli,reflect_xss" #逗号中间不能有空格
 #conf.plugin = "sqli,reflect_xss,any_file_read"
 conf.targets = []
 
@@ -39,7 +37,9 @@ conf.audit_scope.web_pages = "http://www.baidu.com"
 report = TextReport()
 
 #-------
-m_resource = URL(url = "http://news.iciba.com/appv3/wwwroot/ds.php?action=search&search_word=1")
+#m_resource = URL(url = "http://weiyun.city.qq.com/dayueshop/wx.php?redirect_url=12&r=wegoApi%2Fcookie&_=1473047775677&token=ryhfgs1407576378&callbackparam=success_jsonpCallback")
+m_resource = URL(url = "http://172.16.203.129/wooyun_test2/vul/sqlinject/get_str.php?user=xfou")
+m_resource_1 = URL(url = 'http://172.16.203.129/wooyun_test2/vul/sqlinject/search.php', post_params = {"keyword":"booooom"})
 #m_resource = URL(url = "http://login.qidian.com/Login.php?appId=17&target=1&unionlogin=1&areaId=1&pm=1&popup=2&style=2&returnURL=http://avd.qidian.com/OALoginJump.aspx?returnURL=http://game.qidian.com/game/cqby/client/ServerList.aspx")
 
 #conf.targets.append(m_resource)
@@ -51,7 +51,7 @@ m_resource = URL(url = "http://news.iciba.com/appv3/wwwroot/ds.php?action=search
 
 #爬虫
 #spider_task()
-conf.targets = [m_resource]
+conf.targets = [m_resource, m_resource_1]
 
 p = PluginManager()
 p.set_plugin()
@@ -82,10 +82,8 @@ try:
 except KeyboardInterrupt,e:
     print 'fuck!'
 
-global vulresult
-print vulresult
-report.generate_report()
 
+report.generate_report()
 
 #PluginImporter.delModule('sqli')
 #print register_plugins['sqli'].run('222')

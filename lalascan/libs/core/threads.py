@@ -44,8 +44,7 @@ def plugin_run_thread(plugin_name, pluginheader, info):
     #print '1'
     p = pluginheader
     print type(p)
-    global vulresult
-    vulresult.append(p.run_plugin(info))
+    p.run_plugin(info)
 
 
 def execute_plugin(register_plugins, m_resource):

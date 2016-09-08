@@ -7,12 +7,13 @@ from lalascan.api.exception import LalascanNetworkException
 
 from lalascan.libs.core.plugin import PluginBase
 from lalascan.libs.core.pluginregister import reg_instance_plugin
-from lalascan.libs.core.globaldata import logger
+from lalascan.libs.core.globaldata import logger, vulresult
 
 from lalascan.libs.net.web_utils import parse_url, argument_query, get_request
 from lalascan.libs.net.web_mutants import payload_muntants
 
 from lalascan.data.resource.url import URL
+from lalascan.data.vuln.vulnerability import WebVulnerability
 from lalascan.utils.text_utils import to_utf8
 
 from scanpolicy.policy import sql_inject_detect_err_msg_test_cases
@@ -83,7 +84,6 @@ class SqliPlugin(PluginBase):
         target = None
 
         if info.has_url_params:
-            print "GET"
             #param_dict = info.url_params
 
             for test_type in TEST_SQL_TYPE:
@@ -92,7 +92,6 @@ class SqliPlugin(PluginBase):
                     return m_return
 
         if info.has_post_params:
-            print 'POST'
             print info.post_params
             #print info.url, info.post_params
             #param_dict = info.post_params
@@ -177,10 +176,12 @@ class SqliPlugin(PluginBase):
 
                 for test_case_dict in sql_inject_detect_err_msg_test_cases:
 
-                    p = payload_muntants(url, payload = {'k': k , 'pos': 1, 'payload':test_case_dict['input'], 'type': 0}, bmethod = method)
+                    p, payload_resource = payload_muntants(url, payload = {'k': k , 'pos': 1, 'payload':test_case_dict['input'], 'type': 0}, bmethod = method)
                     if self._err_msg_sql_detect(p, test_case_dict['target']):
                         #print '[+] found sql inject in url:{0}, payload:{1}'.format(req_uri, payload_param_dict)
-                        print '[+] found sql inject!'
+                        vulresult.put_nowait(WebVulnerability(target = payload_resource, vulparam_point = key, method = method, payload = test_case_dict['input'], injection_type = "SQLI"))
+
+                        logger.log_success('[!+>>>] found %s err_msg sql inject vulnerable!' % payload_resource.url)
                         return True
 
         elif sql_detect_type == 'ORDER_BY_DETECT':
@@ -190,7 +191,6 @@ class SqliPlugin(PluginBase):
                 value = to_utf8(v)
 
                 if self._orderby_sql_detect(k = key, v = value , url = url, method = method):
-                    print '[+] found order by sql inject!'
                     return True
 
 
@@ -204,7 +204,8 @@ class SqliPlugin(PluginBase):
                 key = to_utf8(k)
                 value = to_utf8(v)
 
-                self._boolean_sql_detect(k = key, v = value , url = url, method = method)
+                if self._boolean_sql_detect(k = key, v = value , url = url, method = method):
+                   return True
 
         elif sql_detect_type == "TIMING_DETECT":
             print '-----------TIMING_DETECT -----------------------'
@@ -215,7 +216,7 @@ class SqliPlugin(PluginBase):
                     key = to_utf8(k)
                     value = to_utf8(v)
                     if self._timing_sql_detect(k = k, v = value, url = url, method = method, short_duration = short_duration):
-                        print '[+] found time_based sql inject!'
+                        #print '[+] found time_based sql inject!'
                         return True
 
 
@@ -270,8 +271,8 @@ class SqliPlugin(PluginBase):
         max_order_column_payload_rsp = None
         min_order_column_payload_rsp = None
         try:
-            max_order_column_payload_rsp = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':max_order_column_payload, 'type': 0}, bmethod = method).data
-            min_order_column_payload_rsp = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':min_order_column_payload, 'type': 0}, bmethod = method).data
+            max_order_column_payload_rsp, _ = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':max_order_column_payload, 'type': 0}, bmethod = method).data
+            min_order_column_payload_rsp, _ = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':min_order_column_payload, 'type': 0}, bmethod = method).data
         except AttributeError:
             return False
 
@@ -284,7 +285,7 @@ class SqliPlugin(PluginBase):
                 column_payload = ' order by {0}--'.format(col)
                 column_payload_rsp = None
                 try:
-                    column_payload_rsp = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':column_payload, 'type': 0}, bmethod = method, use_cache = False).data
+                    column_payload_rsp, _ = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':column_payload, 'type': 0}, bmethod = method, use_cache = False).data
                 except AttributeError:
                     pass
 
@@ -304,18 +305,20 @@ class SqliPlugin(PluginBase):
 
         if table_column != 0:
 
-            logger.log_verbose("%s maybe has order by inject!" % url.url)
+            logger.log_verbose("[+!>>>] %s maybe has order by inject!" % url.url)
             for inject_index in range(table_column):
                 union_list = [x+1 for x in range(table_column)]
                 union_list[inject_index] = ORDER_BY_SIGN
                 union_payload = ' and 1=2 union select {0}'.format(','.join(map(str,union_list)))
                 union_payload_rsp = None
                 try:
-                    union_payload_rsp = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':union_payload, 'type': 0}, bmethod = method, use_cache = False).data
+                    union_payload_rsp, payload_resource = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':union_payload, 'type': 0}, bmethod = method, use_cache = False).data
                 except AttributeError:
                     pass
 
                 if union_payload_rsp != None and ORDER_BY_MD5_VAL in union_payload_rsp:
+                    vulresult.put_nowait(WebVulnerability(target = payload_resource, vulparam_point = k, method = method, payload = union_payload, injection_type = "SQLI"))
+                    logger.log_success('[!+>>>] found %s order_by sql inject vulnerable!' % payload_resource.url)
                     return True
 
         return False
@@ -359,8 +362,8 @@ class SqliPlugin(PluginBase):
             body_true_response = None
             body_false_response = None
             try:
-                body_true_response = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':true_case, 'type': 1}, bmethod = method).data
-                body_false_response = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':false_case, 'type': 1}, bmethod = method).data
+                body_true_response,  payload_resource  = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':true_case, 'type': 1}, bmethod = method).data
+                body_false_response, _  = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':false_case, 'type': 1}, bmethod = method).data
             except AttributeError:
                 continue
 
@@ -375,8 +378,8 @@ class SqliPlugin(PluginBase):
                 compare_diff = True
 
             try:
-                body_confirm_true_response = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':confirm_true_case, 'type': 1}, bmethod = method).data
-                body_confirm_false_response = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':confirm_false_case, 'type': 1}, bmethod = method).data
+                body_confirm_true_response ,  _ = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':confirm_true_case, 'type': 1}, bmethod = method).data
+                body_confirm_false_response,  _ = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':confirm_false_case, 'type': 1}, bmethod = method).data
             except AttributeError:
                 continue
 
@@ -393,7 +396,9 @@ class SqliPlugin(PluginBase):
             if self.__equal_with_limit(body_confirm_false_response,
                                  body_false_response,
                                  compare_diff):
-                print '[+] found boolean sql inject!'
+
+                vulresult.put_nowait(WebVulnerability(target = payload_resource, vulparam_point = k, method = method, payload = true_case, injection_type = "SQLI"))
+                logger.log_success('[!+>>>] found %s boolean sql inject vulnerable!' % payload_resource.url)
                 return True
 
         return False
@@ -405,7 +410,6 @@ class SqliPlugin(PluginBase):
         延时注入(盲注)
         :return:
         '''
-
 
         k = kwargs.get("k", None)
         if k is None or not isinstance(k, str):
@@ -419,13 +423,15 @@ class SqliPlugin(PluginBase):
 
         method = kwargs.get('method', None)
         short_duration = kwargs.get('short_duration', None)
-        print 'short_duration:{0}'.format(short_duration)
+        #print 'short_duration:{0}'.format(short_duration)
 
         rand_str = str(randint(90000, 99999))
 
         for timing_test_case_dict in sql_inject_detect_timing_test_cases:
         #if timing_test_case_dict is not None:
 
+            payload_resource = ''
+            time_payload = ''
             def delay_for(original_wait_time, delay):
                 time_payload = timing_test_case_dict['input'].replace("rndstr", rand_str).replace('duration', str(delay)).replace('val', v)
 
@@ -434,7 +440,7 @@ class SqliPlugin(PluginBase):
                 lower_bound = original_wait_time + delay - delta
 
                 try:
-                    current_response_wait_time = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':time_payload, 'type': 1}, bmethod = method, use_cache = False, timeout = upper_bound).elapsed
+                    current_response_wait_time, payload_resource = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':time_payload, 'type': 1}, bmethod = method, use_cache = False, timeout = upper_bound).elapsed
                     if upper_bound > current_response_wait_time > lower_bound:
                         return True
                 except Exception:
@@ -455,6 +461,9 @@ class SqliPlugin(PluginBase):
                     bvul = False
 
             if bvul:
+                vulresult.put_nowait(WebVulnerability(target = payload_resource, vulparam_point = k, method = method, payload = time_payload, injection_type = "SQLI"))
+                logger.log_success('[!+>>>] found %s boolean sql inject vulnerable!' % payload_resource.url)
+
                 return True
 
 
