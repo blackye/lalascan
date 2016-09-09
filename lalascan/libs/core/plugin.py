@@ -4,8 +4,12 @@
 __author__ = 'BlackYe.'
 
 from lalascan.api.exception import LalascanNotImplementedError
-from lalascan.data.resource import Data
+
+from lalascan.libs.net.web_mutants import get_request
 from lalascan.libs.core.globaldata import conf
+
+from lalascan.data.resource import Data
+from lalascan.data.resource.url import URL
 
 from inspect import isclass
 
@@ -23,7 +27,6 @@ class PluginBase(object):
     def run_plugin(self, plugin_input):
 
         #gevent pool run scan policy
-        print plugin_input
         if isinstance(plugin_input, Data):
             data = plugin_input
 
@@ -41,6 +44,11 @@ class PluginBase(object):
                 if not found:
                     msg = "Plugin %s cannot process data of type %s"
                     raise TypeError(msg % ('sqli', type(data)))
+
+                if isinstance(data, URL):
+                    #test url whether access
+                    if get_request(url = data, allow_redirects = False) is None:
+                        return
 
                 # Call the plugin.
                 result = self.run(data)

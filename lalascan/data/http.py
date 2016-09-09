@@ -395,6 +395,7 @@ class HTTP_Request (Capture):
         ("Cache-Control", "no-store"),
         ("Pragma", "no-cache"),
         ("Expires", "0"),
+        ("Connection", "Close")
     )
 
 

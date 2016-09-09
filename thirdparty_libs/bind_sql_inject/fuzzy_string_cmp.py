@@ -45,7 +45,6 @@ def relative_distance_boolean(a_str, b_str, threshold=0.6):
 
     if threshold < last_bound:
         # Bad, we can't optimize anything here
-        print relative_distance(a_str, b_str)
         return relative_distance(a_str, b_str) >= threshold
     else:
         if last_ratio < ratio:
@@ -56,7 +55,7 @@ def relative_distance_boolean(a_str, b_str, threshold=0.6):
             for size_ratio, bound in UPPER_BOUNDS:
                 if size_ratio > ratio:
                     # Bad: we have to do the relative_distance
-                    print relative_distance(a_str, b_str)
+                    #print relative_distance(a_str, b_str)
                     return relative_distance(a_str, b_str) >= threshold
                 elif bound < threshold:
                     # Good: We found an upper bound

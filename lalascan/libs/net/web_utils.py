@@ -159,7 +159,7 @@ def data_from_http_response(response):
 #---------------------------------------------------
 # Add By BlackYe
 #TODO fix
-def get_request(url, timeout = 10.0, allow_redirects = True,
+def get_request(url, timeout = 30.0, allow_redirects = True,
              allow_out_of_scope = False, use_cache = None):
     """
     request the given URL.

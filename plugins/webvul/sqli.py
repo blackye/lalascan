@@ -35,7 +35,7 @@ else:
     re.set_fallback_notification(re.FALLBACK_WARNING)
 
 TEST_SQL_TYPE = ['ERR_MSG_DETECT', "ORDER_BY_DETECT", "BOOLEAN_DETECT", "TIMING_DETECT"]
-#TEST_SQL_TYPE = ['TIMING_DETECT']
+#TEST_SQL_TYPE = ['BOOLEAN_DETECT']
 
 RSP_SHORT_DURATION = 2
 
@@ -359,11 +359,17 @@ class SqliPlugin(PluginBase):
             confirm_true_case = boolean_test_case_dict['confirm_true_case'].replace("val", str(v)).replace("num", str(rand_num))
             confirm_false_case = boolean_test_case_dict['confirm_false_case'].replace("val", str(v)).replace("num", str(rand_num))
 
-            body_true_response = None
-            body_false_response = None
+            body_true_response = ""
+            body_false_response = ""
             try:
-                body_true_response,  payload_resource  = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':true_case, 'type': 1}, bmethod = method).data
-                body_false_response, _  = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':false_case, 'type': 1}, bmethod = method).data
+                body_true_resp,  payload_resource  = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':true_case, 'type': 1}, bmethod = method)
+                if body_true_resp is not None:
+                    body_true_response = body_true_resp.data
+
+                body_false_resp, _  = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':false_case, 'type': 1}, bmethod = method)
+                if body_false_resp is not None:
+                    body_false_response = body_false_resp.data
+
             except AttributeError:
                 continue
 
@@ -371,15 +377,20 @@ class SqliPlugin(PluginBase):
                 continue
 
             compare_diff = False
-            print 'Comparing body_true_response and body_false_response.'
+            #print 'Comparing body_true_response and body_false_response.'
             if self.__equal_with_limit(body_true_response, body_false_response,
                                  compare_diff):
 
                 compare_diff = True
 
+            body_confirm_true_response  = ""
+            body_confirm_false_response = ""
             try:
-                body_confirm_true_response ,  _ = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':confirm_true_case, 'type': 1}, bmethod = method).data
-                body_confirm_false_response,  _ = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':confirm_false_case, 'type': 1}, bmethod = method).data
+                body_confirm_true_resp ,  _ = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':confirm_true_case, 'type': 1}, bmethod = method)
+                body_confirm_true_response = body_confirm_true_resp.data if body_confirm_true_resp is not None else None
+
+                body_confirm_false_resp,  _ = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':confirm_false_case, 'type': 1}, bmethod = method)
+                body_confirm_false_response = body_confirm_false_resp.data if body_confirm_false_resp is not None else None
             except AttributeError:
                 continue
 

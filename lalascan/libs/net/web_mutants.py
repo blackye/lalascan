@@ -20,7 +20,7 @@ import time
 from copy import copy
 
 def payload_muntants(url_info, payload = {}, bmethod = 'GET', exclude_cgi_suffix = ['css', 'js', 'jpeg', 'jpg', 'png', 'gif', 'svg', 'txt'],
-                     use_cache = None, timeout = 10.0 , bcheck_use_orig_body = True, req_header = {},
+                     use_cache = None, timeout = 30.0 , bcheck_use_orig_body = True, req_header = {},
                      resp_code = '200', resp_header = {}, **kwargs):
 
     '''
