@@ -1,0 +1,114 @@
+{% extends "/handleui/base.html" %}
+{% block user %}
+          <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"> <img alt="" src="/static/handleui/img/avatar1_small.jpg"/> 
+          <span class="username">
+              {{  email }}
+      </span> <i class="icon-angle-down"></i> </a>
+          <ul class="dropdown-menu">
+              <li><a href="login.html"><i class="icon-key"></i> 退出</a> </li>
+          </ul>
+{% endblock %}
+{% block header %}
+       <li> <a href="/cloudsafe/scan/results/"> 扫描结果 </a> </li>
+        <li> <a href="/cloudsafe/scan/queue/">扫描队列</a> </li>
+		<li  class="active"> <a href="/cloudsafe/scan/bug_index/"> <span class="selected"></span> 漏洞检索</a> </li>
+		<li> <a href="/cloudsafe/scan/scan_index/">端口扫描</a> </li>
+        <li> <a href="/cloudsafe/scan/infaq/">帮助中心</a> </li>
+        <li> <a href="/cloudsafe/scan/inabout/"> 关于我们</a> </li>
+{% endblock %}
+{% block content %}
+	<div class="row">
+	  <div class="col-md-1"></div>
+	  <div class="col-md-10">
+		  <div>
+	  		<h2>关键字【{{keywords}}】的搜索结果<small>共{{page_info['total_rows']}}记录</small></h2>
+			  	<table class="table table-striped">
+			  	<tr>
+			  		<th>标题</th>
+					<th>漏洞厂商</th>
+					<th>漏洞奖金</th>
+			  		<th width="15%">漏洞状态</th>
+			  		<th width="10%">提交者</th>
+			  		<th>漏洞类型</th>
+			  		<th>漏洞详情</th>
+			  	</tr>
+				
+	  	{% for row in page_info['rows'] %}
+			  	<tr>
+			  	
+			  		<td><a href="{{row['url']}}" target="_blank">
+			  			{{row['title']}}</a></td>
+                <td><a href="{{row['bug_corps_website']}}"  target="_blank">{{row['bug_corps']}}</a></td>
+					<td>{{row['bounty_amount']}}</td>
+			  		<td><a href="#" target="_blank">{{row['state']}}</a></td>
+
+			  		<td>{{row['reporter']}}</td>
+			  		<td>{{row['bug_type']}}</td>
+					<span name="info-{{row['hackerone_id']}}" class="hidden">{{row['vulnerability_information']}}</span>
+                    <td><input type="button" onclick=open_win($('[name=info-{{row['hackerone_id']}}]').text()) value="查看"></td> 
+					
+			  	</tr>
+			  	{% endfor %}
+				</table>
+				<ul id="pagination" class="pagination-sm"></ul>
+							</div>
+	 	</div>
+	  <div class="col-md-1"></div>
+	</div>
+
+{% endblock %}
+{% block javascript %}
+				<!-- 分页组件js -->
+			
+
+
+function key(str){
+
+data=[];
+data[0]=str;
+$.post("/get_info",{"list":data}).done(function(data){
+console.log(data);
+//data.write_xml(open("1.xml","w")
+//console.log(data);
+
+});
+}
+
+
+function html_encode(str)   
+{   
+  var s = "";   
+  if (str.length == 0) return "";   
+  s = str.replace(/&/g, "&gt;");   
+  s = s.replace(/</g, "&lt;");   
+  s = s.replace(/>/g, "&gt;");   
+  s = s.replace(/ /g, "&nbsp;");   
+  s = s.replace(/\'/g, "&#39;");   
+  s = s.replace(/\"/g, "&quot;");   
+  s = s.replace(/\n/g, "<br>");   
+  return s;   
+}   
+					function open_win(text)
+{
+Open = window.open("chrome://newtab/","_blank","toolbar=yes, location=yes, directories=no, status=no, menubar=yes, scrollbars=yes, resizable=no, copyhistory=yes, width=400, height=400")
+Open.document.write(html_encode(text))
+}
+</script>
+				
+				<script >
+					 $(pagination).twbsPagination({
+					 	first: "首页",
+					 	prev: "前一页",
+					 	next: "后一页",
+					 	last: "尾页",
+				        totalPages: {{page_info['total']}},
+				        visiblePages: 5,
+				        startPage: {{page_info['current']}},
+				        onPageClick: function (event, page) {
+				            location.href="/cloudsafe/scan/search?keywords={{keywords}}&&content_search_by=by_hackerone_bugs&&search_by_html={{search_by_html}}&&page="+page;
+				        }
+				    });
+			
+
+{% endblock %}

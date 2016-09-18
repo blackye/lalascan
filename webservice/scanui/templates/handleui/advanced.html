@@ -1,0 +1,137 @@
+{% extends "handleui/base.html" %}    
+{% block user %}
+<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"> <img alt="" src="/static/handleui/img/avatar1_small.jpg"/> 
+    <span class="username">{{ email }}</span> <i class="icon-angle-down"></i> </a>
+<ul class="dropdown-menu">
+    <li><a href="login.html"><i class="icon-key"></i> 退出</a> </li>
+</ul>
+{% endblock %}
+{% block header %}
+<li  class="active"> <a href="/advanced/"><span class="selected"></span>归档报告</a> </li>
+{% endblock %}
+{% block content %}
+<!-- BEGIN CHART PORTLETS-->
+<div class="row">
+    <div class="col-md-12">
+        <!-- BEGIN DYNAMIC CHART PORTLET-->
+        <div class="portlet box blue">
+            <div class="portlet-title">
+                <div class="caption"><i class="icon-reorder"></i>实时情况</div>
+                <div class="tools">
+                    <a href="javascript:;" class="collapse"></a>
+                    <a href="#portlet-config" data-toggle="modal" class="config"></a>
+                    <a href="javascript:;" class="reload"></a>
+                    <a href="javascript:;" class="remove"></a>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div id="chart_4" class="chart"></div>
+            </div>
+        </div>
+        <!-- END DYNAMIC CHART PORTLET-->
+        <!-- BEGIN INTERACTIVE CHART PORTLET-->
+        <div class="portlet box red">
+            <div class="portlet-title">
+                <div class="caption"><i class="icon-reorder"></i>漏洞总数趋势</div>
+                <div class="tools">
+                    <a href="javascript:;" class="collapse"></a>
+                    <a href="#portlet-config" data-toggle="modal" class="config"></a>
+                    <a href="javascript:;" class="reload"></a>
+                    <a href="javascript:;" class="remove"></a>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div id="chart_2" class="chart"></div>
+            </div>
+        </div>
+        <!-- END INTERACTIVE CHART PORTLET-->                 
+    </div>
+</div>
+<!-- END CHART PORTLETS-->
+<!-- BEGIN PIE CHART PORTLET-->
+<div class="row">
+    <div class="col-md-6">
+        <div class="portlet box yellow">
+            <div class="portlet-title">
+                <div class="caption"><i class="icon-reorder"></i>部门情况</div>
+                <div class="tools">
+                    <a href="#portlet-config" data-toggle="modal" class="config"></a>
+                    <a href="javascript:;" class="reload"></a>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <h4>Default Pie with Legend.</h4>
+                <div id="pie_chart" class="chart"></div>
+            </div>
+        </div>
+        <div class="portlet box purple">
+            <div class="portlet-title">
+                <div class="caption"><i class="icon-reorder"></i>个人情况</div>
+                <div class="tools">
+                    <a href="#portlet-config" data-toggle="modal" class="config"></a>
+                    <a href="javascript:;" class="reload"></a>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <h4>Default Pie without Legend</h4>
+                <div id="pie_chart_1" class="chart"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="portlet box blue">
+            <div class="portlet-title">
+                <div class="caption"><i class="icon-reorder"></i>漏洞情况</div>
+                <div class="tools">
+                    <a href="#portlet-config" data-toggle="modal" class="config"></a>
+                    <a href="javascript:;" class="reload"></a>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <h4>Added a semi-transparent background to the labels and a custom labelFormatter function.</h4>
+                <div id="pie_chart_2" class="chart"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="portlet box red">
+            <div class="portlet-title">
+                <div class="caption"><i class="icon-reorder"></i>Graph7</div>
+                <div class="tools">
+                    <a href="#portlet-config" data-toggle="modal" class="config"></a>
+                    <a href="javascript:;" class="reload"></a>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <h4>Labels can be hidden if the slice is less than a given percentage of the pie (10% in this case).</h4>
+                <div id="pie_chart_7" class="chart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END PAGE CONTENT-->    
+
+{% endblock %}
+{% block extrascript %}
+
+<!-- BEGIN PAGE LEVEL PLUGINS -->
+<script src="/static/handleui/plugins/flot/jquery.flot.js"></script>
+<script src="/static/handleui/plugins/flot/jquery.flot.resize.js"></script>
+<script src="/static/handleui/plugins/flot/jquery.flot.pie.js"></script>
+<script src="/static/handleui/plugins/flot/jquery.flot.stack.js"></script>
+<script src="/static/handleui/plugins/flot/jquery.flot.crosshair.js"></script>
+<!-- END PAGE LEVEL PLUGINS -->
+<!-- BEGIN PAGE LEVEL SCRIPTS -->
+<script src="/static/handleui/scripts/app.js"></script>
+<script src="/static/handleui/scripts/charts.js"></script>      
+<script>
+jQuery(document).ready(function() {       
+        // initiate layout and plugins
+        App.init();
+        Charts.init();
+        Charts.initCharts();
+        Charts.initPieCharts();
+        });
+</script>
+<!-- END PAGE LEVEL SCRIPTS -->
+{% endblock %}

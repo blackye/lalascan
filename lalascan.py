@@ -25,7 +25,7 @@ def parse_cmd_options():
     parser.add_argument("--version", action="version",
                         version=VERSION, help="Show program's version number and exit")
 
-    target = parser.add_argument_group('[Targets]')
+    target = parser.add_argument_group('[ Targets ]')
 
     target.add_argument("-u", "--url", dest="url",
                         help="Target URL (e.g. \"http://www.lalascan.com/\")")
@@ -33,19 +33,19 @@ def parse_cmd_options():
     target.add_argument("-t", "--threads", dest = "process_num",
                         help="max number of process, default cpu number")
 
-    target = parser.add_argument_group('[Resource Found]')
+    target = parser.add_argument_group('[ Resource Found ]')
     target.add_argument("-S", "--spider", dest="bspider", default = False, action = "store_true",
                         help="Enable user Spider")
 
-    plugin = parser.add_argument_group('[Plugin Option]')
+    plugin = parser.add_argument_group('[ Plugin Option ]')
 
     plugin.add_argument("-e", "--enable-plugin", dest = "plugin", default = None,
                         help = "enable a plugin")
 
-    request = parser.add_argument_group('[Request Option]')
+    request = parser.add_argument_group('[ Request Option ]')
 
-    request.add_argument("--data", dest="post_data",
-                         help="HTTP Post Data")
+    request.add_argument("--data", dest="post data",
+                         help="HTTP Post data")
 
     request.add_argument("--cookie", dest="cookie",
                          help="HTTP Cookie header value")

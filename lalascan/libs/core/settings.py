@@ -5,7 +5,14 @@ __author__ = 'BlackYe.'
 
 
 
-BANNER = " LalaScan WebApplication vul scanner! "
+BANNER = '''
+ _          _
+| |    __ _| | __ _ ___  ___ __ _ _ __
+| |   / _` | |/ _` / __|/ __/ _` | '_ \\
+| |__| (_| | | (_| \__ \ (_| (_| | | | |
+|_____\__,_|_|\__,_|___/\___\__,_|_| |_|
+
+LalaScan WebApplication vul scanner! '''
 
 USAGE  = "Fuck"
 

@@ -29,6 +29,7 @@ def banner():
     #if not getattr(LOGGER_HANDLER, "is_tty", False):
     #    _ = re.sub("\033.+?m", "", _)
     #dataToStdout(_)
+    print _
 
 
 def console_output(data, bold = True):
