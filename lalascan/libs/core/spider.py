@@ -20,9 +20,9 @@ import json
 def spider_task():
     cookie_param = None
 
-    cookie_dict = conf.audit_config.cookie if conf.audit_config is not None and conf.audit_config.cookie is not None else None
+    cookie_dict = conf.cookie if conf is not None and conf.has_key('cookie') else None
 
-    m_url = conf.target
+    m_url = conf.url
 
     if cookie_dict != None:
         if hasattr(cookie_dict, "iteritems"):

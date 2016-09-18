@@ -48,10 +48,10 @@ class _HTTP(Singleton):
         self.__session = Session()
 
         # Load the proxy settings.
-        if conf.audit_config is not None and conf.audit_config.has_key('proxy_addr'):
-            proxy_addr = conf.audit_config.proxy_addr
+        if conf is not None and conf.has_key('proxy_addr') and conf.has_key('proxy_port'):
+            proxy_addr = conf.proxy_addr
             if proxy_addr:
-                proxy_port = conf.audit_config.proxy_port
+                proxy_port = conf.proxy_port
                 if proxy_port:
                     proxy_addr = "%s:%s" % (proxy_addr, proxy_port)
 
@@ -68,14 +68,14 @@ class _HTTP(Singleton):
                 }
 
         # Load the cookies.
-        if conf.audit_config is not None and conf.audit_config.has_key('cookie'):
-            cookie = conf.audit_config.cookie
+        if conf is not None and conf.has_key('cookie'):
+            cookie = conf.cookie
             if cookie:
                 self.__session.cookies = cookiejar_from_dict(cookie)
 
         # Set User Agent
-        if conf.audit_config is not None and conf.audit_config.has_key('user_agent'):
-            self.__user_agent = conf.audit_config.user_agent
+        if conf is not None and conf.has_key('user_agent'):
+            self.__user_agent = conf.user_agent
 
 
     #--------------------------------------------------------------------------

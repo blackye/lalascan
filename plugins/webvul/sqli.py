@@ -65,11 +65,8 @@ class SqliPlugin(PluginBase):
 
     #--------------------------------------------------------------------------
     def run(self, info):
-        #if not info.has_url_params and not info.has_post_params:
-        #    return
 
         m_url = info.url
-
 
         # If file is a javascript, css or image, do not run
 
@@ -460,7 +457,7 @@ class SqliPlugin(PluginBase):
             def get_original_time():
                 try:
                     p = get_request(url = url, allow_redirects= False)
-                    return p.elapsed
+                    return p.elapsed if p is not None else None
                 except LalascanNetworkException:
                     return None
 

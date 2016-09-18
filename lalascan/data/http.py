@@ -450,7 +450,10 @@ class HTTP_Request (Capture):
 
         # Cookie header value.
         try:
-            cookie = conf.audit_config.cookie
+            if conf is not None and conf.has_key('cookie'):
+                cookie = conf.cookie
+            else:
+                cookie = None
         except Exception:
             cookie = None
 

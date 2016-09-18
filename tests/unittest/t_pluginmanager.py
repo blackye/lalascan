@@ -39,7 +39,7 @@ report = TextReport()
 #-------
 #m_resource = URL(url = "http://weiyun.city.qq.com/dayueshop/wx.php?redirect_url=12&r=wegoApi%2Fcookie&_=1473047775677&token=ryhfgs1407576378&callbackparam=success_jsonpCallback")
 #m_resource = URL(url = "http://demo.aisec.cn:80/demo/aisec/post_link.php?id=1")
-m_resource_1 = URL(url = 'http://172.16.203.130/wooyun_test2/vul/sqlinject/search.php', post_params = {"keyword":"booooom"})
+m_resource_1 = URL(url = 'http://172.16.203.129/wooyun_test2/vul/sqlinject/search.php', post_params = {"keyword":"12"})
 #m_resource = URL(url = "http://login.qidian.com/Login.php?appId=17&target=1&unionlogin=1&areaId=1&pm=1&popup=2&style=2&returnURL=http://avd.qidian.com/OALoginJump.aspx?returnURL=http://game.qidian.com/game/cqby/client/ServerList.aspx")
 
 #conf.targets.append(m_resource)

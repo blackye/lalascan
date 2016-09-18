@@ -9,7 +9,7 @@ Package payload to URL request, and Get Response info data from payload requests
 
 __author__ = 'BlackYe.'
 
-
+from lalascan.api.exception import LalascanBaseException, LalascanDataException, LalascanValueError
 from lalascan.data.information.html import HTML
 from lalascan.data.resource.url import URL
 from lalascan.libs.core.globaldata import logger
@@ -18,6 +18,8 @@ from lalascan.libs.net.web_utils import parse_url, argument_query, get_request
 from lalascan.utils.text_utils import to_utf8
 import time
 from copy import copy
+
+import inspect
 
 def payload_muntants(url_info, payload = {}, bmethod = 'GET', exclude_cgi_suffix = ['css', 'js', 'jpeg', 'jpg', 'png', 'gif', 'svg', 'txt'],
                      use_cache = None, timeout = 30.0 , bcheck_use_orig_body = True, req_header = {},
@@ -36,6 +38,7 @@ def payload_muntants(url_info, payload = {}, bmethod = 'GET', exclude_cgi_suffix
     :param kwargs:
     :return:
     '''
+
     if not isinstance(url_info , URL):
         raise TypeError("Expected url object, type:%s" % type(url_info))
 
@@ -69,16 +72,27 @@ def payload_muntants(url_info, payload = {}, bmethod = 'GET', exclude_cgi_suffix
             param_dict.update(k = param_dict.pop(k))
 
         # TODO GET/POST param key need deal
-        raise ValueError("GET/POST param key payload is not support!")
-
+        raise LalascanValueError("GET/POST param key payload is not support!")
 
     if bmethod == "GET":
         m_resource_url_payload = URL(url = __.request_cgi, method = bmethod, referer = m_url_info.referer, url_params= param_dict, post_params = m_url_info.post_params)
-        logger.log_verbose('[+] %s' % (m_resource_url_payload.url))
+        try:
+            logger.log_verbose('[webvul:%s] [+] %s' % (get_curmodule(), m_resource_url_payload.url))
+        except LalascanBaseException:
+            logger.log_verbose('[+] %s' %  m_resource_url_payload.url)
 
     elif bmethod == "POST":
         m_resource_url_payload = URL(url = __.request_cgi, method = bmethod, referer = m_url_info.referer, url_params= m_url_info.url_params, post_params= param_dict)
-        logger.log_verbose('[+] %s %s' % (m_resource_url_payload.url, param_dict))
+        try:
+            logger.log_verbose('[webvul:%s] [+] %s %s' % (get_curmodule(), m_resource_url_payload.url, param_dict))
+        except LalascanBaseException:
+            logger.log_verbose('[+] %s %s' %  (m_resource_url_payload.url, param_dict))
 
     return get_request(url = m_resource_url_payload, allow_redirects=False, use_cache = use_cache, timeout = timeout), m_resource_url_payload
 
+
+def get_curmodule():
+    try:
+        return inspect.stack()[2][1]
+    except LalascanBaseException,e:
+        raise LalascanDataException("Get Request Module is Error! Reason:%s" % str(e))

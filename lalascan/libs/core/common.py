@@ -11,12 +11,13 @@ from lalascan.libs.core.globaldata import logger
 from lalascan.libs.core.logger import LOGGER_HANDLER
 
 from lalascan.data.enum import CUSTOM_LOGGING
+from lalascan.utils.text_utils import to_utf8
 
 from lalascan.api.exception import LalascanSystemException
 
 from thirdparty_libs.colorizer import colored
 
-
+from urllib import quote, quote_plus, unquote, unquote_plus
 import sys
 import re
 
@@ -141,3 +142,19 @@ def multiple_replace(text, adict):
     def oneXlat(match):
         return adict[match.group(0)]
     return rx.sub(oneXlat, text)
+
+
+def post_query(query):
+
+    try:
+        # much faster than parse_qsl()
+        query_params = dict(( map(unquote_plus, (to_utf8(token) + '=').split('=', 2)[:2])
+                              for token in query.split('&') ))
+        if len(query_params) == 1 and not query_params.values()[0]:
+            query_params = {}
+        else:
+            query = None
+    except Exception:
+        ##raise   # XXX DEBUG
+        query_params = {}
+    return query_params

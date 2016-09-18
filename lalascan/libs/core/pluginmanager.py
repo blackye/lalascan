@@ -30,6 +30,7 @@ class PluginManager(object):
 
         self.__audit = audit
 
+        self.__all_plugin_name = set()  #contains sqli,reflect_xss
         self.__all_fplugin = set()
 
         #或许所有的插件
@@ -39,17 +40,32 @@ class PluginManager(object):
         """
         @function 设置载入的plugin
         """
-        if conf.plugin is not None:
-            if len(conf.plugin.split(",")) > 1:
-                for plugin_name in conf.plugin.split(","):
+        if conf.plugins is not None:
+            if len(conf.plugins.split(",")) > 1:
+                for _ in conf.plugins.split(","):
+                    plugin_name = _.strip(' ')
                     retval = self._load_plugin_by_name(plugin_name)
             else:
-                plugin_name = conf.plugin
+                plugin_name = conf.plugins
                 self._load_plugin_by_name(plugin_name)
 
         else:
-            # all plugin load except infocollect
-            conf.pocFile = None
+            # all plugin load
+            # conf.pocFile = None
+            self._load_all_plugin()
+
+    def _load_all_plugin(self):
+        for plugin_name in self.__all_plugin_name:
+            try:
+                self._load_plugin_by_name(plugin_name)
+            except LalascanFileNotFoundException,e:
+                logger.log_error(str(e))
+            except LalascanSystemException,e:
+                logger.log_error(str(e))
+
+            except ImportError, ex:
+                errmsg = "%s register failed \"%s\"" % (plugin_name, str(ex))
+                logger.log_error(errmsg)
 
     def _load_plugin_by_name(self, plugin_name):
         try:
@@ -93,6 +109,7 @@ class PluginManager(object):
         for plugin_folder, folder_list , fplugin_list in plugin_path:
             for each_file in fplugin_list:
                 if each_file != '__init__.py' and '.pyc' not in each_file and each_file.endswith(PLUGIN_SUFFIX):
+                    self.__all_plugin_name.add(each_file.strip(PLUGIN_SUFFIX))
                     self.__all_fplugin.add(os.path.join(plugin_folder, each_file))
 
 

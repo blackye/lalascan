@@ -33,12 +33,19 @@ def parse_cmd_options():
     target.add_argument("-t", "--threads", dest = "process_num",
                         help="max number of process, default cpu number")
 
+    target = parser.add_argument_group('[Resource Found]')
+    target.add_argument("-S", "--spider", dest="bspider", default = False, action = "store_true",
+                        help="Enable user Spider")
+
     plugin = parser.add_argument_group('[Plugin Option]')
 
-    plugin.add_argument("-e", "--enable-plugin", dest = "plugin", default=[],
+    plugin.add_argument("-e", "--enable-plugin", dest = "plugin", default = None,
                         help = "enable a plugin")
 
     request = parser.add_argument_group('[Request Option]')
+
+    request.add_argument("--data", dest="post_data",
+                         help="HTTP Post Data")
 
     request.add_argument("--cookie", dest="cookie",
                          help="HTTP Cookie header value")
@@ -69,17 +76,28 @@ def initOptions(inputOptions = AttribDict()):
 
     try:
         conf.url = inputOptions.url
+        if conf.url is None:
+            logger.log_error("no target resource!")
+            sys.exit()
+
         if inputOptions['process_num'] is not None:
             conf.threads = inputOptions.process_num
         else:
             conf.threads = cpu_count()
 
-        conf.plugins = inputOptions.plugin
+        if inputOptions['plugin'] is not None:
+            conf.plugins = inputOptions.plugin
+        else:
+            conf.plugins = None
 
+        #conf.audit_conf.cookie = inputOptions['cookie'] if inputOptions['cookie'] is not None else None
+
+        conf.post_data = inputOptions['post_data']
+        conf.bspider = inputOptions['bspider']
         conf.targets = []
     except LalascanDataException:
-        logger.log(CUSTOM_LOGGING.ERROR, "init args option error!")
-
+        logger.log_error("init args option error!")
+        sys.exit()
 
 def main():
 

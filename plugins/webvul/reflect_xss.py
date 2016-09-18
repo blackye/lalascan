@@ -47,14 +47,12 @@ class ReflectXSSPlugin(PluginBase):
         m_return = []
 
         #TODO 30X redirect
-
-
-        #TODO Content-Type
         p = get_request(url = info, allow_redirects=False)
         if (p.status == '301' or p.status == '302') and not p.headers.get('Location'):
 
             return m_return
 
+        #TODO Content-Type
         if p.content_type is not None and re.search('(application\/json)|(application\/javascript)|(text\/json)|(text\/javascript)|'
                        '(application\/x-javascript)|(application\/octet-stream)|(text\/xml)|(application\/xml)', p.content_type) is not None:
 
