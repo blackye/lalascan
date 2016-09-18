@@ -1,4 +1,4 @@
-![image](https://github.com/blackye/lalascan/blob/master/logo.png)
+![](https://github.com/blackye/lalascan/blob/master/logo.png)
 What's lalascan?
 ===================================  
 Web vulnerability scanner framework
