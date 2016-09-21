@@ -4,13 +4,12 @@
 __author__ = 'BlackYe.'
 
 from lalascan.libs.core.pluginmanager import PluginManager, PluginImporter
-from lalascan.libs.core.common import readfile, post_query
+from lalascan.libs.core.common import readfile, post_query, cookie_query
 from lalascan.libs.core.globaldata import register_plugins, conf, vulresult
 from lalascan.libs.core.report import TextReport
+from lalascan.libs.core.scope import AuditScope, DummyScope
 
 from lalascan.data.resource.url import URL
-
-from lalascan.libs.core.scope import AuditScope, DummyScope
 from lalascan.data.resource.domain import Domain
 
 from lalascan.libs.core.spider import spider_task
@@ -18,8 +17,8 @@ from lalascan.libs.core.threads import plugin_run_thread, execute_plugin, MyReso
 
 
 def init():
-    get_multiple_target()
     http_req_initoption()
+    get_multiple_target()
 
 def run():
     report = TextReport()
@@ -63,10 +62,14 @@ def init_report():
 
 def http_req_initoption():
     _set_http_useragnet()
+    _set_http_cookie()
 
 
 def _set_http_useragnet():
     pass
+
+def _set_http_cookie():
+    conf.cookie = cookie_query(conf.cookie)
 
 def _set_http_referer():
     pass

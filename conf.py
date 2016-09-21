@@ -17,7 +17,7 @@ BASEDIR = os.path.dirname(__file__)
 
 LIBDIR = BASEDIR + '/lib'
 PLUGINDIR = BASEDIR + '/plugins'
-# CACHEDIR = BASEDIR + '/cache'
+CACHEDIR = BASEDIR + '/cache'
 
 # system path
 if BASEDIR not in sys.path:
@@ -26,3 +26,12 @@ if LIBDIR not in sys.path:
 	sys.path.append(LIBDIR)
 if PLUGINDIR not in sys.path:
 	sys.path.append(PLUGINDIR)
+
+
+DB_MYSQL_HOST = '172.16.203.129'
+DB_MYSQL_USER = 'root'
+DB_MYSQL_PWD = 'root'
+DB_MYSQL_PORT = 3306
+DB_MYSQL_DATABASE = 'lalascan'
+
+LEAK_JSON_FILE = 'leakinfo.json'

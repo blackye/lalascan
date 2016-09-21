@@ -159,3 +159,18 @@ def post_query(query):
         ##raise   # XXX DEBUG
         query_params = {}
     return query_params
+
+def cookie_query(cookie_query):
+    try:
+        # much faster than parse_qsl()
+        cookie_params = dict(( map(unquote_plus, (to_utf8(token) + '=').split('=', 2)[:2])
+                              for token in cookie_query.split(';') ))
+        if len(cookie_params) == 1 and not cookie_params.values()[0]:
+            cookie_params = {}
+        else:
+            query = None
+    except Exception:
+        ##raise   # XXX DEBUG
+        cookie_params = {}
+    print cookie_params
+    return cookie_params

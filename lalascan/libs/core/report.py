@@ -4,6 +4,7 @@
 __author__ = 'BlackYe.'
 
 from ...libs.core.globaldata import conf, vulresult
+from ...models.auditdb import AuditMysqlDB
 from ...data import Data
 from ...data.resource.domain import Domain
 from ...data.resource.ip import IP
@@ -14,6 +15,7 @@ from ...utils.console_utils import get_terminal_size, colorize_substring, colori
 
 from thirdparty_libs.texttable import Texttable
 from thirdparty_libs.prettytable.prettytable import PrettyTable
+
 
 import sys
 from collections import defaultdict

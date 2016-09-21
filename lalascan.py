@@ -44,7 +44,7 @@ def parse_cmd_options():
 
     request = parser.add_argument_group('[ Request Option ]')
 
-    request.add_argument("--data", dest="post data",
+    request.add_argument("--data", dest="post_data",
                          help="HTTP Post data")
 
     request.add_argument("--cookie", dest="cookie",
@@ -68,6 +68,11 @@ def parse_cmd_options():
     request.add_argument("--retry", dest="retry", default=False,
                          help="Time out retrials times.")
 
+    request = parser.add_argument_group('[ API Conf Option ]')
+    request.add_argument("--update-leakinfo", dest="leakinfo", action="store_true", default=False,
+                         help="Update or Generate webvulleak info.")
+
+
     args = parser.parse_args()
 
     return args.__dict__
@@ -75,6 +80,14 @@ def parse_cmd_options():
 def initOptions(inputOptions = AttribDict()):
 
     try:
+
+        #========================
+        # api interface must be first
+        if inputOptions['leakinfo']:
+            from lalascan.api.leak_generate import generate_leak_info
+            generate_leak_info()
+
+
         conf.url = inputOptions.url
         if conf.url is None:
             logger.log_error("no target resource!")
@@ -92,7 +105,9 @@ def initOptions(inputOptions = AttribDict()):
 
         #conf.audit_conf.cookie = inputOptions['cookie'] if inputOptions['cookie'] is not None else None
 
-        conf.post_data = inputOptions['post_data']
+        conf.post_data = inputOptions['post_data'] if inputOptions['post_data'] is not None else None
+        conf.cookie = inputOptions['cookie'] if inputOptions['cookie'] is not None else None
+
         conf.bspider = inputOptions['bspider']
         conf.targets = []
     except LalascanDataException:
