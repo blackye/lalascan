@@ -12,6 +12,7 @@ from lalascan.data.resource import Data
 from lalascan.data.resource.url import URL
 
 from inspect import isclass
+from time import sleep
 
 class PluginBase(object):
 
@@ -24,11 +25,11 @@ class PluginBase(object):
     def run(self, info):
         raise LalascanNotImplementedError()
 
-    def run_plugin(self, plugin_input):
+    def run_plugin(self, resource_input, resource_method , resource_param):
 
         #gevent pool run scan policy
-        if isinstance(plugin_input, Data):
-            data = plugin_input
+        if isinstance(resource_input, Data):
+            data = resource_input
 
             try:
                 accepted_info = self.get_accepted_types()
@@ -51,7 +52,9 @@ class PluginBase(object):
                         return
 
                 # Call the plugin.
-                result = self.run(data)
+                print resource_param
+                result = self.run(data, method = resource_method, param = resource_param)
+                sleep(0.05)
                 return result
 
             except LalascanNotImplementedError:

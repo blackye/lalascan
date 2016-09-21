@@ -3,6 +3,8 @@
 
 __author__ = 'BlackYe.'
 
+from lalascan.api.exception import LalascanValueError
+
 from lalascan.libs.core.plugin import PluginBase
 from lalascan.libs.core.pluginregister import reg_instance_plugin
 from lalascan.libs.core.globaldata import logger, conf, vulresult
@@ -40,7 +42,7 @@ class ReflectXSSPlugin(PluginBase):
 
 
     #--------------------------------------------------------------------------
-    def run(self, info):
+    def run(self, info, **kwargs):
         #if not info.has_url_params and not info.has_post_params:
         #    return
 
@@ -59,6 +61,8 @@ class ReflectXSSPlugin(PluginBase):
             return m_return
 
         m_url = info
+
+        '''
         if info.has_url_params:
             for k,v in m_url.url_params.iteritems():
                 key = to_utf8(k)
@@ -75,6 +79,18 @@ class ReflectXSSPlugin(PluginBase):
                 value = to_utf8(v)
                 if self.xss_detect(m_url, method = 'POST', k = key, v = value):
                     break
+        '''
+
+        method = kwargs.get('method', None)
+        if method is None or not isinstance(method, str):
+            raise LalascanValueError("run plugin param has not method!")
+
+        param = kwargs.get('param', None)
+        if param is None or not isinstance(param, dict):
+            raise LalascanValueError("run plugin param has not param!")
+
+        if self.xss_detect(m_url, method = method, k = param['param_key'], v = param['param_value']):
+            return m_return
 
         # Send the results
         return m_return

@@ -4,6 +4,7 @@
 __author__ = 'BlackYe.'
 
 from lalascan.api.exception import LalascanNetworkException
+from lalascan.api.exception import LalascanValueError
 
 from lalascan.libs.core.plugin import PluginBase
 from lalascan.libs.core.pluginregister import reg_instance_plugin
@@ -64,7 +65,7 @@ class SqliPlugin(PluginBase):
 
 
     #--------------------------------------------------------------------------
-    def run(self, info):
+    def run(self, info, **kwargs):
 
         m_url = info.url
 
@@ -80,12 +81,13 @@ class SqliPlugin(PluginBase):
         m_source_url = []
         target = None
 
+        '''
         if info.has_url_params:
             #param_dict = info.url_params
 
             for test_type in TEST_SQL_TYPE:
             #self.deal_param_payload(test_type, info.url, param_dict, method = info.method, referer = info.referer)
-                if self.deal_param_payload(test_type, info, method = 'GET'):
+                if self.deal_param_payload(test_type, info, method = 'GET', param = kwargs['param']):
                     return m_return
 
         if info.has_post_params:
@@ -95,9 +97,20 @@ class SqliPlugin(PluginBase):
 
             for test_type in TEST_SQL_TYPE:
                 #self.deal_param_payload(test_type, info.url, param_dict, method = info.method, referer = info.referer)
-                if self.deal_param_payload(test_type, info, method = 'POST'):
+                if self.deal_param_payload(test_type, info, method = 'POST', param = kwargs['param']):
                     return m_return
+        '''
+        method = kwargs.get('method', None)
+        if method is None or not isinstance(method, str):
+            raise LalascanValueError("run plugin param has not method!")
 
+        param = kwargs.get('param', None)
+        if param is None or not isinstance(param, dict):
+            raise LalascanValueError("run plugin param has not param!")
+
+        for test_type in TEST_SQL_TYPE:
+            if self.deal_param_payload(test_type, info, method = method , param = kwargs['param']):
+                    return m_return
 
         # Send the results
         return m_return
@@ -118,11 +131,12 @@ class SqliPlugin(PluginBase):
         #if not isinstance(param_dict, dict):
         #    raise TypeError("Expected param_dict string, type:%s" % type(param_dict))
 
-        if method == 'GET':
-            param_dict = url.url_params
-        elif method == 'POST':
-            param_dict = url.post_params
+        #if method == 'GET':
+        #    param_dict = url.url_params
+        #elif method == 'POST':
+        #    param_dict = url.post_params
 
+        param_dict = kwargs['param']
 
         is_timing_stable = True
         short_duration = 1
@@ -165,6 +179,7 @@ class SqliPlugin(PluginBase):
 
         #__check_if_rsp_stable_on_orig_input()
 
+        '''
         if sql_detect_type == "ERR_MSG_DETECT":
             for k,v in param_dict.iteritems():
 
@@ -215,6 +230,38 @@ class SqliPlugin(PluginBase):
                     if self._timing_sql_detect(k = k, v = value, url = url, method = method, short_duration = short_duration):
                         #print '[+] found time_based sql inject!'
                         return True
+
+        '''
+        if sql_detect_type == "ERR_MSG_DETECT":
+            for test_case_dict in sql_inject_detect_err_msg_test_cases:
+                p, payload_resource = payload_muntants(url, payload = {'k': param_dict['param_key'] , 'pos': 1, 'payload':test_case_dict['input'], 'type': 0}, bmethod = method)
+                if self._err_msg_sql_detect(p, test_case_dict['target']):
+                    #print '[+] found sql inject in url:{0}, payload:{1}'.format(req_uri, payload_param_dict)
+                    vulresult.put_nowait(WebVulnerability(target = payload_resource, vulparam_point = param_dict['param_key'] , method = method, payload = test_case_dict['input'], injection_type = "SQLI"))
+
+                    logger.log_success('[!+>>>] found %s err_msg sql inject vulnerable!' % payload_resource.url)
+                    return True
+
+        elif sql_detect_type == 'ORDER_BY_DETECT':
+            if self._orderby_sql_detect(k = param_dict['param_key'], v = param_dict['param_value'] , url = url, method = method):
+                return True
+
+
+        elif sql_detect_type == "ECHO_DETECT":
+            self._echo_sql_detect()
+
+        elif sql_detect_type == "BOOLEAN_DETECT":
+            print '----------- BOOLEAN_DETECT -----------------------'
+
+            if self._boolean_sql_detect(k = param_dict['param_key'], v = param_dict['param_value'] , url = url, method = method):
+               return True
+
+        elif sql_detect_type == "TIMING_DETECT":
+            print '-----------TIMING_DETECT -----------------------'
+
+            if self._timing_sql_detect(k = param_dict['param_key'], v = param_dict['param_value'], url = url, method = method, short_duration = short_duration):
+                #print '[+] found time_based sql inject!'
+                return True
 
 
     def _err_msg_sql_detect(self, response_mutants, sql_err_re):

@@ -89,7 +89,7 @@ class _HTTP(Singleton):
 
 
     #--------------------------------------------------------------------------
-    def get_url(self, url, method = "GET", callback = None, timeout = 10.0, allow_redirects = True):
+    def get_url(self, url, method = "GET", callback = None, timeout = 30.0, allow_redirects = True):
         """
         Send a simple HTTP request to the server and get the response back.
 
@@ -124,7 +124,7 @@ class _HTTP(Singleton):
 
 
     #--------------------------------------------------------------------------
-    def make_request(self, request, callback = None, timeout = 10.0, allow_redirects = True):
+    def make_request(self, request, callback = None, timeout = 30.0, allow_redirects = True):
         """
         Send an HTTP request to the server and get the response back.
 
@@ -269,7 +269,7 @@ class _HTTP(Singleton):
 
     #--------------------------------------------------------------------------
     def make_raw_request(self, raw_request, host, port = 80, proto = "http",
-                 callback = None, timeout = 10.0):
+                 callback = None, timeout = 30.0):
         """
         Send a raw HTTP request to the server and get the response back.
 

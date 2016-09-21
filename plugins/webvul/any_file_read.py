@@ -3,6 +3,8 @@
 
 __author__ = 'BlackYe.'
 
+from lalascan.api.exception import LalascanValueError
+
 from lalascan.libs.core.plugin import PluginBase
 from lalascan.libs.core.pluginregister import reg_instance_plugin
 from lalascan.libs.core.globaldata import logger, vulresult
@@ -45,7 +47,7 @@ class AnyFileReadPlugin(PluginBase):
 
 
     #--------------------------------------------------------------------------
-    def run(self, info):
+    def run(self, info, **kwargs):
         #if not info.has_url_params and not info.has_post_params:
         #    return
 
@@ -68,40 +70,25 @@ class AnyFileReadPlugin(PluginBase):
             print "GET"
 
             '''
-            param_dict = info.url_params
-            for k,v in param_dict.iteritems():
 
-                key = to_utf8(k)
-                value = to_utf8(v)
+            method = kwargs.get('method', None)
+            if method is None or not isinstance(method, str):
+                raise LalascanValueError("run plugin param has not method!")
 
-                for any_file_read_case in any_file_read_detect_test_cases:
-                    p, payload_resource = payload_muntants(info, payload = {'k': key , 'pos': 1, 'payload':any_file_read_case['input'], 'type': 1}, bmethod = info.method)
-                    if p is not None:
-                        __ = re.search(any_file_read_case['target'], p.data)
-                        if __ is not None:
-                            vul = WebVulnerability(target = payload_resource, vulparam_point = key, method = 'GET', payload = any_file_read_case['input'], injection_type = "ANY_FILE_READ")
-                            vulresult.put_nowait(vul)
-                            logger.log_success('[!+>>>] found %s reflect xss vulnerable!' % payload_resource.url)
+            param = kwargs.get('param', None)
+            if param is None or not isinstance(param, dict):
+                raise LalascanValueError("run plugin param has not param!")
 
-                            return m_return
+            for any_file_read_case in any_file_read_detect_test_cases:
+                p, payload_resource = payload_muntants(info, payload = {'k': param['param_key'] , 'pos': 1, 'payload':any_file_read_case['input'], 'type': 1}, bmethod = method)
+                if p is not None:
+                    __ = re.search(any_file_read_case['target'], p.data)
+                    if __ is not None:
+                        vul = WebVulnerability(target = payload_resource, vulparam_point = param['param_key'], method = method, payload = any_file_read_case['input'], injection_type = "ANY_FILE_READ")
+                        vulresult.put_nowait(vul)
+                        logger.log_success('[!+>>>] found %s reflect xss vulnerable!' % payload_resource.url)
 
-
-        if info.has_post_params:
-            param_dict = info.post_params
-            for k,v in param_dict.iteritems():
-                key = to_utf8(k)
-                value = to_utf8(v)
-
-                for any_file_read_case in any_file_read_detect_test_cases:
-                    p , payload_resource = payload_muntants(info, payload = {'k': key , 'pos': 1, 'payload':any_file_read_case['input'], 'type': 1}, bmethod = info.method)
-                    if p is not None:
-                        __ = re.search(any_file_read_case['target'], p.data)
-
-                        if __ is not None:
-                            vul = WebVulnerability(target = payload_resource, vulparam_point = key, method = 'POST', payload = any_file_read_case['input'], injection_type = "ANY_FILE_READ")
-                            vulresult.put_nowait(vul)
-                            logger.log_success('[!+>>>] found %s reflect xss vulnerable!' % payload_resource.url)
-                            return m_return
+                        return m_return
 
         # Send the results
         return m_return
