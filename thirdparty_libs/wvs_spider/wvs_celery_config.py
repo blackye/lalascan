@@ -1,10 +1,13 @@
 # celeryconfig.py
 # coding=utf-8
 
-from lib.config import REDIS_PWD
+from lib.config import REDIS_PWD, REDIS_SERVER, REDIS_PORT
 
-BROKER_URL = 'redis://:%s@172.16.203.129:6379/8' % REDIS_PWD
-CELERY_RESULT_BACKEND = 'redis://:%s@172.16.203.129:6379/9' % REDIS_PWD
+BROKER_URL = 'redis://:{0}@{1}:{2}/8'.format(REDIS_PWD, REDIS_SERVER, REDIS_PORT)
+CELERY_RESULT_BACKEND = 'redis://:{0}@{1}:{2}/9'.format(REDIS_PWD, REDIS_SERVER, REDIS_PORT)
+
+#BROKER_URL = 'redis://:%s@172.16.203.129:6379/8' % REDIS_PWD
+#CELERY_RESULT_BACKEND = 'redis://:%s@172.16.203.129:6379/9' % REDIS_PWD
 
 # Tasks 位于 worker.py 中
 CELERY_IMPORTS = ('wvs_tasks', )
