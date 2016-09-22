@@ -34,3 +34,11 @@ PLUGIN_CLASSNAME_REGEX = "class\s+(.*?)\(PluginBase\)"
 
 
 PLUGIN_SUFFIX = '.py'
+
+NGX_HTTP_CODE = {
+    'NGX_HTTP_ERROR'     : 500,
+    'NGX_HTTP_FORBIDDEN' : 403,
+    'NGX_HTTP_NOT_FOUND' : 404,
+    'NGX_HTTP_AUTH'      : 401,
+    'NGX_HTTP_REDIRECT'  : 301
+}

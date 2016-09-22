@@ -19,6 +19,7 @@ from ...api.exception import LalascanNetworkOutOfScope, LalascanNetworkException
 from ...utils.text_utils import generate_random_string, split_first, to_utf8
 #from ..text.matching_analyzer import get_diff_ratio
 from ..core.common import json_decode, json_encode
+from ..core.settings import NGX_HTTP_CODE
 from ..core.globaldata import logger
 
 from BeautifulSoup import BeautifulSoup
@@ -222,7 +223,17 @@ def get_request(url, timeout = 30.0, allow_redirects = True,
                                          timeout = timeout,
                                          allow_redirects = allow_redirects)
 
-            return response
+            _status_code = int(response.status)
+
+            if _status_code >= NGX_HTTP_CODE['NGX_HTTP_ERROR']:
+                retry_cnt += 1
+                time.sleep(0.5)
+                logger.log_error("Error while processing %r: Return Http Code:%d" % (url.url, _status_code))
+            elif (_status_code >= NGX_HTTP_CODE['NGX_HTTP_NOT_FOUND'] and _status_code < NGX_HTTP_CODE['NGX_HTTP_ERROR']): #404
+                logger.log_error("Error while processing %r: Return Http Code:%d" % (url.url, _status_code))
+                return None
+            else:
+                return response
         except LalascanNetworkException, e:
             retry_cnt += 1
             time.sleep(0.5)

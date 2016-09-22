@@ -172,5 +172,4 @@ def cookie_query(cookie_query):
     except Exception:
         ##raise   # XXX DEBUG
         cookie_params = {}
-    print cookie_params
     return cookie_params
