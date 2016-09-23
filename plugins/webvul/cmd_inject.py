@@ -45,7 +45,7 @@ class CmdInjectPlugin(PluginBase):
                 value = to_utf8(v)
 
                 for cmd_inject_case in cmd_inject_detect_test_cases:
-                    p = payload_muntants(info, payload = {'k': k , 'pos': 1, 'payload':cmd_inject_case['input'], 'type': 0}, bmethod = info.method, timeout = 15.0)
+                    p = payload_muntants(info, payload = {'k': k , 'pos': 1, 'payload':cmd_inject_case['input'], 'type': 0}, bmethod = info.method, timeout = 30.0)
 
                     if cmd_inject_case['target'] is not None:
                         if p is not None:
@@ -63,7 +63,7 @@ class CmdInjectPlugin(PluginBase):
                 value = to_utf8(v)
 
                 for cmd_inject_case in cmd_inject_detect_test_cases:
-                    p = payload_muntants(info, payload = {'k': k , 'pos': 1, 'payload':cmd_inject_case['input'], 'type': 0}, bmethod = info.method, timeout = 15.0)
+                    p = payload_muntants(info, payload = {'k': k , 'pos': 1, 'payload':cmd_inject_case['input'], 'type': 0}, bmethod = info.method, timeout = 30.0)
 
                     if cmd_inject_case['target'] is not None:
                         if p is not None:

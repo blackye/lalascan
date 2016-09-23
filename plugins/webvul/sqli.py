@@ -3,30 +3,25 @@
 
 __author__ = 'BlackYe.'
 
-from lalascan.api.exception import LalascanNetworkException
-from lalascan.api.exception import LalascanValueError
+from random import randint, shuffle
+import time
 
+from lalascan.api.exception import LalascanNetworkException, LalascanAttributeError
+from lalascan.api.exception import LalascanValueError
 from lalascan.libs.core.plugin import PluginBase
 from lalascan.libs.core.pluginregister import reg_instance_plugin
 from lalascan.libs.core.globaldata import logger, vulresult
-
-from lalascan.libs.net.web_utils import parse_url, argument_query, get_request
-from lalascan.libs.net.web_mutants import payload_muntants
-
+from lalascan.libs.net.web_utils import get_request
+from lalascan.libs.net.web_mutants import payload_muntants, request_muntants
+from lalascan.utils.mymath import LalaMath
 from lalascan.data.resource.url import URL
 from lalascan.data.vuln.vulnerability import WebVulnerability
-from lalascan.utils.text_utils import to_utf8
-
 from scanpolicy.policy import sql_inject_detect_err_msg_test_cases
 from scanpolicy.policy import sql_inject_detect_boolean_test_cases
-from scanpolicy.policy import sql_inject_detect_echo_test_cases
 from scanpolicy.policy import sql_inject_detect_timing_test_cases
-
 from thirdparty_libs.bind_sql_inject.fuzzy_string_cmp import relative_distance_boolean
 from thirdparty_libs.bind_sql_inject.diff import diff
-
-from random import randint, shuffle
-import time, math
+import math
 
 try:
     import re2 as re
@@ -35,7 +30,7 @@ except ImportError:
 else:
     re.set_fallback_notification(re.FALLBACK_WARNING)
 
-TEST_SQL_TYPE = ['ERR_MSG_DETECT', "ORDER_BY_DETECT", "BOOLEAN_DETECT", "TIMING_DETECT"]
+TEST_SQL_TYPE = ['ERR_MSG_DETECT', "ORDER_BY_DETECT", "UNION_BY_DETECT"] #, "BOOLEAN_DETECT", "TIMING_DETECT"
 #TEST_SQL_TYPE = ['BOOLEAN_DETECT']
 
 RSP_SHORT_DURATION = 2
@@ -45,6 +40,20 @@ DELTA_PERCENT = 1.25
 
 #time base seconds
 DELAY_SECONDS = [3, 4, 6, 2]
+
+#Minimum time response set needed for time-comparison based on standard deviation
+MIN_TIME_RESPONSES = 30
+
+# Coefficient used for a time-based query delay checking (must be >= 7)
+# 99.9999999997440% of all non time-based SQL injection affected
+# response times should be inside +-7*stdev([normal response times])
+TIME_STDEV_COEFF = 7
+
+###每个用例间隔时间系数
+DURATION_VAR_RATIO = 0.85
+
+##实际返回时间波动比例方差
+MAX_RSP_DELAY_RATIO = 2
 
 #order by check sign
 ORDER_BY_SIGN = 'md5(95278)'
@@ -57,7 +66,9 @@ class SqliPlugin(PluginBase):
 
 
     def __init__(self):
-        pass
+        self.response_times = []
+        self.normal_rsp_time_stdev = 0
+        self.normal_rsp_time_average = 0
 
 
     def get_accepted_types(self):
@@ -142,7 +153,7 @@ class SqliPlugin(PluginBase):
         short_duration = 1
 
         def __check_if_rsp_stable_on_orig_input():
-            p = get_request(url = url, allow_redirects=False)
+            p = request_muntants(url = url, allow_redirects=False)
             if p.status != '200':
                 is_timing_stable = False
 
@@ -151,7 +162,7 @@ class SqliPlugin(PluginBase):
 
             time.sleep(2)
 
-            p = get_request(url = url, allow_redirects=False)
+            p = request_muntants(url = url, allow_redirects=False)
             if p.status != '200':
                 is_timing_stable = False
 
@@ -242,10 +253,13 @@ class SqliPlugin(PluginBase):
                     logger.log_success('[!+>>>] found %s err_msg sql inject vulnerable!' % payload_resource.url)
                     return True
 
-        elif sql_detect_type == 'ORDER_BY_DETECT':
+        elif sql_detect_type == "ORDER_BY_DETECT":
             if self._orderby_sql_detect(k = param_dict['param_key'], v = param_dict['param_value'] , url = url, method = method):
                 return True
 
+        elif sql_detect_type == "UNION_BY_DETECT":
+            if self._union_sql_detect(k = param_dict['param_key'], v = param_dict['param_value'] , url = url, method = method):
+                return True
 
         elif sql_detect_type == "ECHO_DETECT":
             self._echo_sql_detect()
@@ -271,6 +285,7 @@ class SqliPlugin(PluginBase):
         '''
 
         if response_mutants is not None:
+            self.add_normal_rsp_time(response_mutants.elapsed)
             __ = re.search(sql_err_re, response_mutants.data)
             if __ is not None:
                 return True
@@ -302,71 +317,154 @@ class SqliPlugin(PluginBase):
 
         table_column = 0
 
-        max_order_column_payload = ' order by {0}--'.format( max_bound )
-        min_order_column_payload = ' order by {0}--'.format( min_bound )
+        for keyword in ['or', 'and']:
+            max_order_column_payload = ' {0} 1=2 order by {1}--'.format( keyword, max_bound )
+            min_order_column_payload = ' {0} 1=2 order by {1}--'.format( keyword, min_bound )
 
-        p = get_request(url = url, allow_redirects = False)
+            p = request_muntants(url = url, allow_redirects = False)
 
-        if p.status != '200' and p is None:
-            return False
+            if p is None or p.status != '200':
+                return False
 
-        orig_resp_body  = p.data
+            orig_resp_body  = p.data
 
-        max_order_column_payload_rsp = None
-        min_order_column_payload_rsp = None
-        try:
-            max_order_column_payload_rsp, _ = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':max_order_column_payload, 'type': 0}, bmethod = method).data
-            min_order_column_payload_rsp, _ = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':min_order_column_payload, 'type': 0}, bmethod = method).data
-        except AttributeError:
-            return False
+            max_order_column_payload_rsp, _ = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':max_order_column_payload, 'type': 0}, bmethod = method)
+            min_order_column_payload_rsp, _ = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':min_order_column_payload, 'type': 0}, bmethod = method)
 
-        if max_order_column_payload_rsp != None and min_order_column_payload_rsp != None and (orig_resp_body != max_order_column_payload_rsp) and (orig_resp_body == min_order_column_payload_rsp):
-            #maybe exist sql_inject
+            if max_order_column_payload_rsp is not None and min_order_column_payload_rsp is not None:
+                self.add_normal_rsp_time(max_order_column_payload_rsp.elapsed)
+            else:
+                return False
 
-            while lower_index <= high_index:
-                #二分法
-                col = int(math.ceil( (lower_index + high_index) / 2))
-                column_payload = ' order by {0}--'.format(col)
-                column_payload_rsp = None
-                try:
-                    column_payload_rsp, _ = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':column_payload, 'type': 0}, bmethod = method, use_cache = False).data
-                except AttributeError:
-                    pass
+            if max_order_column_payload_rsp.data != None and min_order_column_payload_rsp.data != None and (orig_resp_body != max_order_column_payload_rsp.data) and (orig_resp_body == min_order_column_payload_rsp.data):
+                #maybe exist sql_inject
 
-                if column_payload_rsp != None and column_payload_rsp != orig_resp_body:
-                    if (lower_index + 1)  == high_index:
-                        break
-                    high_index = col
-                else:
-                    if (lower_index + 1) == high_index:
-                        table_column = lower_index
-                        print '*' * 50
-                        break
-                    elif lower_index == high_index:
-                        table_column = high_index
-                        break
-                    lower_index = col
+                while lower_index <= high_index:
+                    #二分法
+                    col = int(math.ceil( (lower_index + high_index) / 2))
+                    column_payload = ' order by {0}--'.format(col)
+                    print column_payload
+                    column_payload_rsp = None
+                    column_payload_rsp, _ = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':column_payload, 'type': 0}, bmethod = method, use_cache = False)
 
-        if table_column != 0:
+                    if column_payload_rsp != None and column_payload_rsp.data != orig_resp_body:
+                        if (lower_index + 1)  == high_index:
+                            break
+                        high_index = col
+                    else:
+                        if (lower_index + 1) == high_index:
+                            table_column = lower_index
+                            print '*' * 50
+                            break
+                        elif lower_index == high_index:
+                            table_column = high_index
+                            break
+                        lower_index = col
 
-            logger.log_verbose("[+!>>>] %s maybe has order by inject!" % url.url)
-            for inject_index in range(table_column):
-                union_list = [x+1 for x in range(table_column)]
-                union_list[inject_index] = ORDER_BY_SIGN
-                union_payload = ' and 1=2 union select {0}'.format(','.join(map(str,union_list)))
-                union_payload_rsp = None
-                try:
-                    union_payload_rsp, payload_resource = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':union_payload, 'type': 0}, bmethod = method, use_cache = False).data
-                except AttributeError:
-                    pass
+            if table_column != 0:
 
-                if union_payload_rsp != None and ORDER_BY_MD5_VAL in union_payload_rsp:
-                    vulresult.put_nowait(WebVulnerability(target = payload_resource, vulparam_point = k, method = method, payload = union_payload, injection_type = "SQLI"))
-                    logger.log_success('[!+>>>] found %s order_by sql inject vulnerable!' % payload_resource.url)
-                    return True
+                logger.log_verbose("[+!>>>] %s maybe has order by inject!" % url.url)
+                for inject_index in range(table_column):
+                    union_list = [x+1 for x in range(table_column)]
+                    union_list[inject_index] = ORDER_BY_SIGN
+                    union_payload = ' {0} 1=2 union select {1}'.format(keyword, ','.join(map(str,union_list)))
+                    union_payload_rsp = None
+                    try:
+                        union_payload_rsp, payload_resource = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':union_payload, 'type': 0}, bmethod = method, use_cache = False)
+
+                        if union_payload_rsp is not None and ORDER_BY_MD5_VAL in union_payload_rsp.data:
+                            vulresult.put_nowait(WebVulnerability(target = payload_resource, vulparam_point = k, method = method, payload = union_payload, injection_type = "SQLI"))
+                            logger.log_success('[!+>>>] found %s order_by sql inject vulnerable!' % payload_resource.url)
+                            return True
+
+                    except LalascanAttributeError:
+                        return False
 
         return False
 
+
+    def _union_sql_detect(self, **kwargs):
+        '''
+        union 注入
+        :param kwargs:
+        :return:
+        '''
+        k = kwargs.get("k", None)
+        if k is None or not isinstance(k, str):
+            raise ValueError("Except param has not key!")
+
+        v = kwargs.get("v", None)
+
+        url = kwargs.get("url", None)
+        if url is None or not isinstance(url, URL):
+            raise ValueError("Except param has not req_uri")
+
+        method = kwargs.get('method', None)
+
+        max_column = 20
+        orig_rsp = request_muntants(url = url, allow_redirects = False)
+
+        if orig_rsp is None or orig_rsp.status != '200':
+            return False
+
+        union_payload = None
+        table_columns = 0
+        first_union_payload_rsp_data = None
+
+        for index in range(1, max_column):
+            if index == 1:
+                union_payload = " union select 1"
+            else:
+                union_payload = "{0},{1}".format(union_payload, index)
+            print union_payload
+
+            union_payload_rsp, payload_resource = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':union_payload, 'type': 0}, bmethod = method)
+
+            if union_payload_rsp is not None:
+                if index == 1:
+                    first_union_payload_rsp_data = union_payload_rsp.data
+
+                else:
+                    if (union_payload_rsp.data != first_union_payload_rsp_data) and (union_payload_rsp.data != orig_rsp.data):
+                        #TODO Maybe WAF, union_payload_rsp.data != orig_rsp.data
+                        if index == 2:
+                            table_columns = [1,2]
+                        else:
+                            table_columns = index
+                        break
+            else:
+                break
+
+        if table_columns != 0 and isinstance(table_columns, str):
+            for inject_index in range(table_columns):
+                union_list = [x+1 for x in range(table_columns)]
+                union_list[inject_index] = ORDER_BY_SIGN
+                union_payload = ' union select {0}'.format(','.join(map(str,union_list)))
+                union_payload_rsp = None
+                try:
+                    union_payload_rsp, payload_resource = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':union_payload, 'type': 0}, bmethod = method, use_cache = False)
+
+                    if union_payload_rsp is not None and ORDER_BY_MD5_VAL in union_payload_rsp.data:
+                        vulresult.put_nowait(WebVulnerability(target = payload_resource, vulparam_point = k, method = method, payload = union_payload, injection_type = "SQLI"))
+                        logger.log_success('[!+>>>] found %s union_by sql inject vulnerable!' % payload_resource.url)
+                        return True
+
+                except LalascanAttributeError:
+                    return False
+        elif isinstance(table_columns, list):
+            union_payload_list = [' union select {0}'.format(ORDER_BY_SIGN), ' union select {0},2'.format(ORDER_BY_SIGN), ' union select 1, {0}'.format(ORDER_BY_SIGN)]
+            for union_payload in union_payload_list:
+                try:
+                    union_payload_rsp, payload_resource = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':union_payload, 'type': 0}, bmethod = method, use_cache = False)
+
+                    if union_payload_rsp is not None and ORDER_BY_MD5_VAL in union_payload_rsp.data:
+                        vulresult.put_nowait(WebVulnerability(target = payload_resource, vulparam_point = k, method = method, payload = union_payload, injection_type = "SQLI"))
+                        logger.log_success('[!+>>>] found %s union_by sql inject vulnerable!' % payload_resource.url)
+                        return True
+
+                except LalascanAttributeError:
+                    continue
+            return False
 
 
     def _echo_sql_detect(self, **kwargs):
@@ -414,6 +512,7 @@ class SqliPlugin(PluginBase):
                 if body_false_resp is not None:
                     body_false_response = body_false_resp.data
 
+                self.add_normal_rsp_time(body_true_resp.elapsed)
             except AttributeError:
                 continue
 
@@ -480,12 +579,20 @@ class SqliPlugin(PluginBase):
         short_duration = kwargs.get('short_duration', None)
         #print 'short_duration:{0}'.format(short_duration)
 
+        while len(self.response_times) < MIN_TIME_RESPONSES:
+            p = request_muntants(url = url, allow_redirects=False)
+            if p is not None:
+                self.add_normal_rsp_time(p.elapsed)
+
+        self.normal_rsp_time_average = LalaMath.average(self.response_times)
+        self.normal_rsp_time_stdev = LalaMath.stdev(self.response_times)
+
         rand_str = str(randint(90000, 99999))
 
         for timing_test_case_dict in sql_inject_detect_timing_test_cases:
         #if timing_test_case_dict is not None:
 
-            payload_resource = ''
+            payload_resource = None
             time_payload = ''
             def delay_for(original_wait_time, delay):
                 time_payload = timing_test_case_dict['input'].replace("rndstr", rand_str).replace('duration', str(delay)).replace('val', v)
@@ -495,11 +602,17 @@ class SqliPlugin(PluginBase):
                 lower_bound = original_wait_time + delay - delta
 
                 try:
-                    current_response_wait_time, payload_resource = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':time_payload, 'type': 1}, bmethod = method, use_cache = False, timeout = upper_bound).elapsed
-                    if upper_bound > current_response_wait_time > lower_bound:
-                        return True
-                except Exception:
-                    return False
+                    time_sleep_rsp , payload_resource = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':time_payload, 'type': 1}, bmethod = method, use_cache = False, timeout = 30.0)
+                    current_response_wait_time = time_sleep_rsp.elapsed
+                    rsp_delay = int(math.ceil(current_response_wait_time))
+                    lower_bound = delay + self.normal_rsp_time_average - TIME_STDEV_COEFF * self.normal_rsp_time_stdev  #正态分布
+                    rsp_delay_ratio = rsp_delay / delay
+                    return rsp_delay >= lower_bound, rsp_delay, rsp_delay_ratio, payload_resource
+
+                    #if upper_bound > current_response_wait_time > lower_bound:
+                    #    return True
+                except Exception,e:
+                    return False, 0, 0
 
             def get_original_time():
                 try:
@@ -509,21 +622,61 @@ class SqliPlugin(PluginBase):
                     return None
 
             bvul = True
+            all_rsp_delay = {}
+            all_rsp_delay_ratio = []
 
             shuffle(DELAY_SECONDS)
             for delay in DELAY_SECONDS:
-                if not delay_for(get_original_time(), delay):
-                    bvul = False
+                #if not delay_for(get_original_time(), delay):
+                #    bvul = False
+                _ , rsp_delay, rsp_delay_ratio, payload_resource = delay_for(get_original_time(), delay)
+                if not _:
+                    #本轮检测结束
+                    continue
+                else:
+                    all_rsp_delay[delay] = rsp_delay
+                    all_rsp_delay_ratio.append(rsp_delay_ratio)
+            sort_all_rsp_delay = sorted(all_rsp_delay.iteritems(), key=lambda x:x[0])
+
+            last_delay = None
+            last_rsp_delay = None
+            for _ in sort_all_rsp_delay:
+                if last_rsp_delay is None and last_delay is None:
+                    last_rsp_delay = _[1]
+                    last_delay = _[0]
+                    continue
+
+                if _[1] < last_rsp_delay:
+                    continue  #over
+                    #return False
+
+                if (_[0] - last_delay) < ((_[1] - last_rsp_delay) * DURATION_VAR_RATIO):
+                    continue #over
+                    #return False
+
+            rsp_delay_ratio_average = LalaMath.average(all_rsp_delay_ratio)
+            rsp_delay_ratio_stdev   = LalaMath.stdev(all_rsp_delay_ratio)
+
+            if rsp_delay_ratio_stdev > MAX_RSP_DELAY_RATIO:
+                continue #over
 
             if bvul:
                 vulresult.put_nowait(WebVulnerability(target = payload_resource, vulparam_point = k, method = method, payload = time_payload, injection_type = "SQLI"))
-                logger.log_success('[!+>>>] found %s boolean sql inject vulnerable!' % payload_resource.url)
-
+                logger.log_success('[!+>>>] found %s time-based sql inject vulnerable!' % payload_resource.url)
                 return True
 
+    #-----------------------------
+    def add_normal_rsp_time(self, normal_rsp_time):
+        '''
+        # add normal rsp time to list
+        :param normal_rsp_time:
+        :return:
+        '''
+        if len(self.response_times) <= MIN_TIME_RESPONSES:
+            self.response_times.append(normal_rsp_time)
 
 
-     #--------------------------------------------------------------------------
+    #--------------------------------------------------------------------------
     def check_download(self, url, name, content_length, content_type):
         print '******************'
         print url

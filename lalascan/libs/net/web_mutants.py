@@ -91,6 +91,15 @@ def payload_muntants(url_info, payload = {}, bmethod = 'GET', exclude_cgi_suffix
     return get_request(url = m_resource_url_payload, allow_redirects=False, use_cache = use_cache, timeout = timeout), m_resource_url_payload
 
 
+def request_muntants(url, timeout = 30.0, allow_redirects = True, allow_out_of_scope = False):
+
+    if not isinstance(url , URL):
+        raise TypeError("Expected url object, type:%s" % type(url))
+
+    logger.log_verbose('[requets_url:%s] [+] %s' % (get_curmodule(), url.url))
+    return get_request(url = url, allow_redirects=False, timeout = timeout)
+
+
 def get_curmodule():
     try:
         return inspect.stack()[2][1]

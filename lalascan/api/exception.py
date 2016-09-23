@@ -12,6 +12,7 @@ __all__ = ["LalascanBaseException",
            "LalascanNetworkException",
            "LalascanNetworkOutOfScope",
            "LalascanNotImplementedError",
+           "LalascanAttributeError",
            "LalascanTypeError",
            "LalascanValueError",
            "LalascanFileNotFoundException"]
@@ -45,6 +46,9 @@ class LalascanNetworkOutOfScope(LalascanNetworkException):
 
 
 class LalascanNotImplementedError(NotImplementedError):
+    pass
+
+class LalascanAttributeError(AttributeError):
     pass
 
 class LalascanTypeError(TypeError):
