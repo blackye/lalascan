@@ -30,7 +30,7 @@ except ImportError:
 else:
     re.set_fallback_notification(re.FALLBACK_WARNING)
 
-TEST_SQL_TYPE = ['ERR_MSG_DETECT', "ORDER_BY_DETECT", "UNION_BY_DETECT"] #, "BOOLEAN_DETECT", "TIMING_DETECT"
+TEST_SQL_TYPE = ['ERR_MSG_DETECT', "ORDER_BY_DETECT", "UNION_BY_DETECT", "BOOLEAN_DETECT", "TIMING_DETECT"] #, "BOOLEAN_DETECT", "TIMING_DETECT"
 #TEST_SQL_TYPE = ['BOOLEAN_DETECT']
 
 RSP_SHORT_DURATION = 2
@@ -435,7 +435,7 @@ class SqliPlugin(PluginBase):
             else:
                 break
 
-        if table_columns != 0 and isinstance(table_columns, str):
+        if table_columns != 0 and isinstance(table_columns, int):
             for inject_index in range(table_columns):
                 union_list = [x+1 for x in range(table_columns)]
                 union_list[inject_index] = ORDER_BY_SIGN
@@ -592,78 +592,104 @@ class SqliPlugin(PluginBase):
         for timing_test_case_dict in sql_inject_detect_timing_test_cases:
         #if timing_test_case_dict is not None:
 
-            payload_resource = None
-            time_payload = ''
-            def delay_for(original_wait_time, delay):
-                time_payload = timing_test_case_dict['input'].replace("rndstr", rand_str).replace('duration', str(delay)).replace('val', v)
+            if timing_test_case_dict['encode'] == 'ALL': #对规则用例是否进行编码
+                payload_encode_list = [True, False]
+            else:
+                payload_encode_list = [True]
 
-                delta = original_wait_time * DELTA_PERCENT
-                upper_bound = (delay * 2) + original_wait_time + delta + 1
-                lower_bound = original_wait_time + delay - delta
+            for payload_encode in payload_encode_list:
 
-                try:
-                    time_sleep_rsp , payload_resource = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':time_payload, 'type': 1}, bmethod = method, use_cache = False, timeout = 30.0)
-                    current_response_wait_time = time_sleep_rsp.elapsed
-                    rsp_delay = int(math.ceil(current_response_wait_time))
-                    lower_bound = delay + self.normal_rsp_time_average - TIME_STDEV_COEFF * self.normal_rsp_time_stdev  #正态分布
-                    rsp_delay_ratio = rsp_delay / delay
-                    return rsp_delay >= lower_bound, rsp_delay, rsp_delay_ratio, payload_resource
+                payload_resource = None
+                time_payload = ''
+                def delay_for(original_wait_time, delay):
+                    time_payload = timing_test_case_dict['input'].replace("rndstr", rand_str).replace('duration', str(delay)).replace('val', v)
 
-                    #if upper_bound > current_response_wait_time > lower_bound:
-                    #    return True
-                except Exception,e:
-                    return False, 0, 0
+                    delta = original_wait_time * DELTA_PERCENT
+                    upper_bound = (delay * 2) + original_wait_time + delta + 1
+                    lower_bound = original_wait_time + delay - delta
 
-            def get_original_time():
-                try:
-                    p = get_request(url = url, allow_redirects= False)
-                    return p.elapsed if p is not None else None
-                except LalascanNetworkException:
-                    return None
+                    try:
+                        time_sleep_rsp , payload_resource = payload_muntants(url_info = url, payload = {'k': k , 'pos': 1, 'payload':time_payload, 'type': 0}, bmethod = method, use_cache = False, timeout = 30.0, payload_encode = payload_encode)
+                        current_response_wait_time = time_sleep_rsp.elapsed
+                        rsp_delay = int(math.ceil(current_response_wait_time))
+                        lower_bound = delay + self.normal_rsp_time_average - TIME_STDEV_COEFF * self.normal_rsp_time_stdev  #正态分布
+                        if timing_test_case_dict['case_id'] == 1100020137:
+                            print current_response_wait_time
+                            print time_payload
+                            print delay, rsp_delay, lower_bound
+                        rsp_delay_ratio = rsp_delay / delay
+                        return rsp_delay >= lower_bound, rsp_delay, rsp_delay_ratio, payload_resource
 
-            bvul = True
-            all_rsp_delay = {}
-            all_rsp_delay_ratio = []
+                        #if upper_bound > current_response_wait_time > lower_bound:
+                        #    return True
+                    except Exception,e:
+                        return False, 0, 0
 
-            shuffle(DELAY_SECONDS)
-            for delay in DELAY_SECONDS:
-                #if not delay_for(get_original_time(), delay):
-                #    bvul = False
-                _ , rsp_delay, rsp_delay_ratio, payload_resource = delay_for(get_original_time(), delay)
-                if not _:
-                    #本轮检测结束
+                def get_original_time():
+                    try:
+                        p = get_request(url = url, allow_redirects= False)
+                        return p.elapsed if p is not None else None
+                    except LalascanNetworkException:
+                        return None
+
+                bvul = True
+                bcontinue = False
+                all_rsp_delay = {}
+                all_rsp_delay_ratio = []
+
+                shuffle(DELAY_SECONDS)
+                for delay in DELAY_SECONDS:
+                    #if not delay_for(get_original_time(), delay):
+                    #    bvul = False
+                    _ , rsp_delay, rsp_delay_ratio, payload_resource = delay_for(get_original_time(), delay)
+                    if timing_test_case_dict['case_id'] == 1100020137:
+                        print _, rsp_delay, rsp_delay_ratio
+                    if not _:
+                        #本轮检测结束
+                        bcontinue = True
+                        break
+                    else:
+                        all_rsp_delay[delay] = rsp_delay
+                        all_rsp_delay_ratio.append(rsp_delay_ratio)
+
+                if bcontinue:
                     continue
-                else:
-                    all_rsp_delay[delay] = rsp_delay
-                    all_rsp_delay_ratio.append(rsp_delay_ratio)
-            sort_all_rsp_delay = sorted(all_rsp_delay.iteritems(), key=lambda x:x[0])
 
-            last_delay = None
-            last_rsp_delay = None
-            for _ in sort_all_rsp_delay:
-                if last_rsp_delay is None and last_delay is None:
-                    last_rsp_delay = _[1]
-                    last_delay = _[0]
+                sort_all_rsp_delay = sorted(all_rsp_delay.iteritems(), key=lambda x:x[0])
+
+                last_delay = None
+                last_rsp_delay = None
+                for _ in sort_all_rsp_delay:
+                    if last_rsp_delay is None and last_delay is None: #初始值
+                        last_rsp_delay = _[1]
+                        last_delay = _[0]
+                        continue
+
+                    if _[1] < last_rsp_delay:
+                        bcontinue = True
+                        break  #over
+                        #return False
+
+                    if (_[0] - last_delay) < ((_[1] - last_rsp_delay) * DURATION_VAR_RATIO):
+                        bcontinue = True
+                        break #over
+                        #return False
+
+                if bcontinue:
                     continue
 
-                if _[1] < last_rsp_delay:
-                    continue  #over
-                    #return False
+                rsp_delay_ratio_average = LalaMath.average(all_rsp_delay_ratio)
+                rsp_delay_ratio_stdev   = LalaMath.stdev(all_rsp_delay_ratio)
 
-                if (_[0] - last_delay) < ((_[1] - last_rsp_delay) * DURATION_VAR_RATIO):
+                if rsp_delay_ratio_stdev > MAX_RSP_DELAY_RATIO:
                     continue #over
-                    #return False
 
-            rsp_delay_ratio_average = LalaMath.average(all_rsp_delay_ratio)
-            rsp_delay_ratio_stdev   = LalaMath.stdev(all_rsp_delay_ratio)
+                if bvul:
+                    vulresult.put_nowait(WebVulnerability(target = payload_resource, vulparam_point = k, method = method, payload = time_payload, injection_type = "SQLI"))
+                    logger.log_success('[!+>>>] found %s time-based sql inject vulnerable!' % payload_resource.url)
+                    return True
 
-            if rsp_delay_ratio_stdev > MAX_RSP_DELAY_RATIO:
-                continue #over
-
-            if bvul:
-                vulresult.put_nowait(WebVulnerability(target = payload_resource, vulparam_point = k, method = method, payload = time_payload, injection_type = "SQLI"))
-                logger.log_success('[!+>>>] found %s time-based sql inject vulnerable!' % payload_resource.url)
-                return True
+        return False
 
     #-----------------------------
     def add_normal_rsp_time(self, normal_rsp_time):

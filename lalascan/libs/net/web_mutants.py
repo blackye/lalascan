@@ -22,7 +22,7 @@ from copy import copy
 import inspect
 
 def payload_muntants(url_info, payload = {}, bmethod = 'GET', exclude_cgi_suffix = ['css', 'js', 'jpeg', 'jpg', 'png', 'gif', 'svg', 'txt'],
-                     use_cache = None, timeout = 30.0 , bcheck_use_orig_body = True, req_header = {},
+                     use_cache = None, timeout = 30.0 , payload_encode = True, bcheck_use_orig_body = True, req_header = {},
                      resp_code = '200', resp_header = {}, **kwargs):
 
     '''
@@ -75,14 +75,14 @@ def payload_muntants(url_info, payload = {}, bmethod = 'GET', exclude_cgi_suffix
         raise LalascanValueError("GET/POST param key payload is not support!")
 
     if bmethod == "GET":
-        m_resource_url_payload = URL(url = __.request_cgi, method = bmethod, referer = m_url_info.referer, url_params= param_dict, post_params = m_url_info.post_params)
+        m_resource_url_payload = URL(url = __.request_cgi, method = bmethod, referer = m_url_info.referer, url_params= param_dict, post_params = m_url_info.post_params, urlencode = payload_encode)
         try:
             logger.log_verbose('[webvul:%s] [+] %s' % (get_curmodule(), m_resource_url_payload.url))
         except LalascanBaseException:
             logger.log_verbose('[+] %s' %  m_resource_url_payload.url)
 
     elif bmethod == "POST":
-        m_resource_url_payload = URL(url = __.request_cgi, method = bmethod, referer = m_url_info.referer, url_params= m_url_info.url_params, post_params= param_dict)
+        m_resource_url_payload = URL(url = __.request_cgi, method = bmethod, referer = m_url_info.referer, url_params= m_url_info.url_params, post_params= param_dict, urlencode = payload_encode)
         try:
             logger.log_verbose('[webvul:%s] [+] %s %s' % (get_curmodule(), m_resource_url_payload.url, param_dict))
         except LalascanBaseException:

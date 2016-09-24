@@ -144,7 +144,7 @@ class URL(_AbstractURL):
 
 
     #--------------------------------------------------------------------------
-    def __init__(self, url, method = "GET", post_params = None, referer = None, **kwargs):
+    def __init__(self, url, method = "GET", post_params = None, referer = None, urlencode = True, **kwargs):
         """
         :param url: Absolute URL.
         :type url: str
@@ -157,6 +157,9 @@ class URL(_AbstractURL):
 
         :param referer: Referrer URL.
         :type referer: str
+
+        :param urlencode: POST|GET Data urlencode
+        :type urlencode: bool
 
         :raises ValueError: Currently, relative URLs are not allowed.
         """
@@ -181,10 +184,15 @@ class URL(_AbstractURL):
                 post_params = {
                     to_utf8(k): to_utf8(v) for k,v in post_params.iteritems()
                 }
-                post_data = '&'.join(
-                    '%s=%s' % ( quote(k, safe=''), quote(v, safe='') )
-                    for (k, v) in sorted(post_params.iteritems())
-                )
+                if urlencode:
+                    post_data = '&'.join(
+                        '%s=%s' % ( quote(k, safe=''), quote(v, safe='') )
+                        for (k, v) in sorted(post_params.iteritems())
+                    )
+                else:
+                    post_data = '&'.join(
+                        '%s=%s' % ( k, v ) for (k, v) in sorted(post_params.iteritems())
+                    )
             else:
                 post_data   = to_utf8(post_params)
                 post_params = None
@@ -219,11 +227,18 @@ class URL(_AbstractURL):
                 url_params = {
                     to_utf8(k): to_utf8(v) for k, v in url_params.iteritems()
                 }
-                query_param = '&'.join(
+                if urlencode:
+                     query_param = '&'.join(
                     '%s=%s' % ( quote(k, safe=''), quote(v, safe='') )
-                    for (k, v) in sorted(url_params.iteritems())
-                )
+                    for (k, v) in sorted(url_params.iteritems()))
+                else:
+                    query_param = '&'.join(
+                        '%s=%s' % ( k, v)
+                        for (k, v) in sorted(url_params.iteritems())
+                    )
                 url = url + '?' + query_param
+                if "sysdate" in query_param and "limit" in query_param:
+                    print url, 'fuck!!'
 
 
         # Save the properties.
