@@ -249,7 +249,6 @@ class SqliPlugin(PluginBase):
                 if self._err_msg_sql_detect(p, test_case_dict['target']):
                     #print '[+] found sql inject in url:{0}, payload:{1}'.format(req_uri, payload_param_dict)
                     vulresult.put_nowait(WebVulnerability(target = payload_resource, vulparam_point = param_dict['param_key'] , method = method, payload = test_case_dict['input'], injection_type = "SQLI"))
-
                     logger.log_success('[!+>>>] found %s err_msg sql inject vulnerable!' % payload_resource.url)
                     return True
 

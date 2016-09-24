@@ -10,6 +10,7 @@ import logging
 import sys
 
 from lalascan.data.enum import CUSTOM_LOGGING
+from conf import CACHELOG, join_path_func
 
 logging.addLevelName(CUSTOM_LOGGING.SYSINFO, "*")
 logging.addLevelName(CUSTOM_LOGGING.SUCCESS, "+")
@@ -29,6 +30,11 @@ try:
             disableColor = True
             break
 
+    #写入磁盘cache目录下
+    bcahce_log = True
+    if bcahce_log:
+        LOGGER_FILE_HANDLER = logging.FileHandler(join_path_func(CACHELOG, 'test.log'))
+
     if disableColor:
         LOGGER_HANDLER = logging.StreamHandler(sys.stdout)
     else:
@@ -43,7 +49,9 @@ except ImportError, e:
 FORMATTER = logging.Formatter("\r[%(asctime)s] [%(levelname)s] %(name)s: %(message)s", datefmt = "%Y-%m-%d %H:%M:%S")
 
 LOGGER_HANDLER.setFormatter(FORMATTER)
+LOGGER_FILE_HANDLER.setFormatter(FORMATTER)
 LOGGER.addHandler(LOGGER_HANDLER)
+LOGGER.addHandler(LOGGER_FILE_HANDLER)
 LOGGER.setLevel(CUSTOM_LOGGING.WARNING)
 
 class ScanLog(object):

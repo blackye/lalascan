@@ -18,6 +18,7 @@ BASEDIR = os.path.dirname(__file__)
 LIBDIR = BASEDIR + '/lib'
 PLUGINDIR = BASEDIR + '/plugins'
 CACHEDIR = BASEDIR + '/cache'
+CACHELOG = CACHEDIR + '/scanlog'
 
 # system path
 if BASEDIR not in sys.path:

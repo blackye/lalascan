@@ -10,6 +10,7 @@ global var data
 from lalascan.libs.core.logger import ScanLog
 from lalascan.data.datatype import AttribDict
 from multiprocessing import Queue
+
 # logger
 logger = ScanLog()
 
