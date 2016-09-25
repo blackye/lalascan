@@ -5,8 +5,6 @@ import logging
 import os
 import re
 
-from pocsuite.lib.core.convert import stdoutencode
-
 
 class ColorizingStreamHandler(logging.StreamHandler):
     # color names to indices
@@ -47,9 +45,10 @@ class ColorizingStreamHandler(logging.StreamHandler):
         isatty = getattr(self.stream, 'isatty', None)
         return isatty and isatty() and not self.disable_coloring
 
+    '''
     def emit(self, record):
         try:
-            message = stdoutencode(self.format(record))
+            message = _stdoutencode(self.format(record))
             stream = self.stream
 
             if not self.is_tty:
@@ -67,6 +66,7 @@ class ColorizingStreamHandler(logging.StreamHandler):
             pass
         except:
             self.handleError(record)
+    '''
 
     if os.name != 'nt':
         def output_colorized(self, message):

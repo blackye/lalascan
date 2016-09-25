@@ -51,6 +51,7 @@ def console_output(data, bold = True):
 
     return
 
+
 def _stdoutencode(data):
     retVal = None
 
