@@ -22,7 +22,6 @@ var/
 *.egg
 #test
 temp/
-cache/
 output/
 
 # Installer logs
@@ -33,7 +32,6 @@ pip-delete-this-directory.txt
 htmlcov/
 .tox/
 .coverage
-.cache
 nosetests.xml
 coverage.xml
 
@@ -53,7 +51,7 @@ coverage.xml
 *.pot
 
 # Sphinx documentation
-docs/_build/
+#docs/_build/
 
 # CTag
 .tags*
