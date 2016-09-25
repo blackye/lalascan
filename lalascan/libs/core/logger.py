@@ -20,8 +20,10 @@ logging.addLevelName(CUSTOM_LOGGING.WARNING, "!")
 LOGGER = logging.getLogger("lalascan")
 
 LOGGER_HANDLER = None
+LOGGER_FILE_HANDLER = None
+
 try:
-    from pocsuite.thirdparty.ansistrm.ansistrm import ColorizingStreamHandler
+    from thirdparty_libs.ansistrm.ansistrm import ColorizingStreamHandler
 
     disableColor = False
 
@@ -44,6 +46,7 @@ try:
         LOGGER_HANDLER.level_map[logging.getLevelName("-")] = (None, "red", False)
         LOGGER_HANDLER.level_map[logging.getLevelName("!")] = (None, "yellow", False)
 except ImportError, e:
+    print str(e)
     LOGGER_HANDLER = logging.StreamHandler(sys.stdout)
 
 FORMATTER = logging.Formatter("\r[%(asctime)s] [%(levelname)s] %(name)s: %(message)s", datefmt = "%Y-%m-%d %H:%M:%S")
