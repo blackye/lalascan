@@ -1,0 +1,121 @@
+//
+// Variables
+// --------------------------------------------------
+
+// Colors Base
+@brand-base:                #5c90d2;
+@brand-light:               lighten(@brand-base, 15%);
+@brand-lighter:             lighten(@brand-base, 28%);
+@brand-dark:                #3e4a59;
+@brand-darker:              #2c343f;
+
+@brand-primary:             @brand-base;
+@brand-success:             #46c37b;
+@brand-info:                #70b9eb;
+@brand-warning:             #f3b760;
+@brand-danger:              #d26a5c;
+
+@brand-success-light:       #e0f5e9;
+@brand-info-light:          #edf6fd;
+@brand-warning-light:       #fdf3e5;
+@brand-danger-light:        #f9eae8;
+
+@gray-base:                 #c9c9c9;
+@gray-dark:                 #999999;
+@gray-darker:               #393939;
+@gray-light:                #f3f3f3;
+@gray-lighter:              #f9f9f9;
+
+// Scaffolding
+@body-bg:                   #f5f5f5;
+@text-color:                #646464;
+@text-color-dark:           #545454;
+@link-color:                @brand-primary;
+@link-hover-color:          darken(@link-color, 15%);
+@link-hover-decoration:     none;
+@focus-style:               2px dotted #5c99db;
+
+// Color Themes
+@theme-amethyst-base:       #a48ad4;
+@theme-amethyst-light:      lighten(@theme-amethyst-base, 12%);
+@theme-amethyst-lighter:    lighten(@theme-amethyst-base, 22%);
+@theme-amethyst-dark:       #4f546b;
+@theme-amethyst-darker:     #353847;
+@theme-amethyst-body:       #f6f5f7;
+
+@theme-city-base:           #ff6b6b;
+@theme-city-light:          lighten(@theme-city-base, 7%);
+@theme-city-lighter:        lighten(@theme-city-base, 15%);
+@theme-city-dark:           #555;
+@theme-city-darker:         #333;
+@theme-city-body:           @body-bg;
+
+@theme-flat-base:           #44b4a6;
+@theme-flat-light:          lighten(@theme-flat-base, 18%);
+@theme-flat-lighter:        lighten(@theme-flat-base, 28%);
+@theme-flat-dark:           #3f5259;
+@theme-flat-darker:         #242f33;
+@theme-flat-body:           #f5f7f7;
+
+@theme-modern-base:         #14adc4;
+@theme-modern-light:        lighten(@theme-modern-base, 30%);
+@theme-modern-lighter:      lighten(@theme-modern-base, 45%);
+@theme-modern-dark:         #3e4d52;
+@theme-modern-darker:       #323e42;
+@theme-modern-body:         #f5f6f7;
+
+@theme-smooth-base:         #ff6c9d;
+@theme-smooth-light:        lighten(@theme-smooth-base, 7%);
+@theme-smooth-lighter:      lighten(@theme-smooth-base, 15%);
+@theme-smooth-dark:         #4a5568;
+@theme-smooth-darker:       #333a47;
+@theme-smooth-body:         #f7f5f6;
+
+// Typography
+@font-family-base:          "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-size-base:            14px;
+@font-size-h1:              36px;
+@font-size-h2:              30px;
+@font-size-h3:              24px;
+@font-size-h4:              20px;
+@font-size-h5:              16px;
+@font-size-h6:              14px;
+
+@headings-font-family:      "Source Sans Pro", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@headings-font-weight:      600;
+@headings-line-height:      1.2;
+@headings-color:            inherit;
+@headings-small-color:      @gray-dark;
+
+@line-height-base:          1.6;
+
+// Layout Spaces
+@space-base:                30px;           // Content padding
+@space-grid-base:           6px;            // Content grid padding 2, 4, 6.. etc
+@space-block:               20px;           // Block padding
+@space-side-content:        @space-block;   // Side Content padding
+@space-width-boxed:         1280px;         // Boxed content max width
+@space-width-narrow:        95%;            // Narrow content max width
+
+// Header
+@header-height:             60px;           // Best values > 40px and < 70px
+
+// Sidebar and Side Overlay
+@sidebar-width:             230px;
+@sidebar-width-mini:        60px;
+@side-overlay-width:        320px;
+@side-transition:           .28s ease-out;
+
+// Forms
+@form-border-color:         #e6e6e6;
+@form-border-focus-color:   #ccc;
+@form-bg-focus-color:       #fcfcfc;
+
+// Media queries breakpoints
+@screen-xs-min:             480px;
+@screen-sm-min:             768px;
+@screen-md-min:             992px;
+@screen-lg-min:             1200px;
+@screen-xs-max:             (@screen-sm-min - 1);
+@screen-sm-max:             (@screen-md-min - 1);
+@screen-md-max:             (@screen-lg-min - 1);

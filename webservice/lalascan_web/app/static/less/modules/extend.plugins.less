@@ -1,0 +1,519 @@
+//
+// Plugins
+//
+// Overwrite/Extend styles of various JS plugins
+// --------------------------------------------------
+
+// Draggable Blocks (jQueryUI)
+.draggable {
+    &-handler {
+        cursor: move;
+    }
+
+    &-placeholder {
+        background-color: #f1f1f1;
+        border: 1px dashed #ccc;
+    }
+}
+
+// Highlight.js
+pre.pre-sh {
+    padding: 0;
+    margin: 0;
+    border: none;
+    background-color: transparent;
+    border-radius: 0;
+}
+
+// DropzoneJS
+.dropzone {
+    min-height: 200px;
+    background-color: #f9f9f9;
+    border: 2px dashed #bbb;
+    border-radius: 3px;
+
+    .dz-message {
+        margin: 65px 0;
+        font-size: 16px;
+        font-style: italic;
+        color: #888;
+    }
+
+    &:hover {
+        background-color: #fcfcfc;
+        border-color: @brand-primary;
+
+        .dz-message {
+            color: @brand-primary;
+        }
+    }
+}
+
+// Bootstrap Datepicker
+.datepicker {
+    z-index: 1051 !important;
+}
+
+.input-daterange .input-group-addon {
+    min-width: 30px;
+    color: @text-color;
+    background-color: #f9f9f9;
+    border-color: @form-border-color;
+}
+
+.datepicker table tr td.today,
+.datepicker table tr td.today:hover,
+.datepicker table tr td.today.disabled,
+.datepicker table tr td.today.disabled:hover {
+    background-color: #faeab9;
+    border-color: #faeab9;
+}
+
+.datepicker table tr td.active:hover,
+.datepicker table tr td.active:hover:hover,
+.datepicker table tr td.active.disabled:hover,
+.datepicker table tr td.active.disabled:hover:hover,
+.datepicker table tr td.active:focus,
+.datepicker table tr td.active:hover:focus,
+.datepicker table tr td.active.disabled:focus,
+.datepicker table tr td.active.disabled:hover:focus,
+.datepicker table tr td.active:active,
+.datepicker table tr td.active:hover:active,
+.datepicker table tr td.active.disabled:active,
+.datepicker table tr td.active.disabled:hover:active,
+.datepicker table tr td.active.active,
+.datepicker table tr td.active:hover.active,
+.datepicker table tr td.active.disabled.active,
+.datepicker table tr td.active.disabled:hover.active,
+.open .dropdown-toggle.datepicker table tr td.active,
+.open .dropdown-toggle.datepicker table tr td.active:hover,
+.open .dropdown-toggle.datepicker table tr td.active.disabled,
+.open .dropdown-toggle.datepicker table tr td.active.disabled:hover,
+.datepicker table tr td span.active:hover,
+.datepicker table tr td span.active:hover:hover,
+.datepicker table tr td span.active.disabled:hover,
+.datepicker table tr td span.active.disabled:hover:hover,
+.datepicker table tr td span.active:focus,
+.datepicker table tr td span.active:hover:focus,
+.datepicker table tr td span.active.disabled:focus,
+.datepicker table tr td span.active.disabled:hover:focus,
+.datepicker table tr td span.active:active,
+.datepicker table tr td span.active:hover:active,
+.datepicker table tr td span.active.disabled:active,
+.datepicker table tr td span.active.disabled:hover:active,
+.datepicker table tr td span.active.active,
+.datepicker table tr td span.active:hover.active,
+.datepicker table tr td span.active.disabled.active,
+.datepicker table tr td span.active.disabled:hover.active,
+.open .dropdown-toggle.datepicker table tr td span.active,
+.open .dropdown-toggle.datepicker table tr td span.active:hover,
+.open .dropdown-toggle.datepicker table tr td span.active.disabled,
+.open .dropdown-toggle.datepicker table tr td span.active.disabled:hover {
+    background-color: @brand-primary;
+    border-color: @brand-primary;
+}
+
+// Bootstrap Colorpicker
+.colorpicker.dropdown-menu {
+    min-width: 130px;
+}
+
+// jQuery Tags Input
+div.tagsinput {
+    padding: 6px 12px 1px;
+    border-color: @form-border-color;
+    border-radius: 3px;
+
+    input {
+        padding-top: 0;
+        padding-bottom: 0;
+        height: 22px;
+    }
+
+    .form-material & {
+        padding-right: 0;
+        padding-left: 0;
+        border: none;
+        border-bottom: 1px solid @form-border-color;
+    }
+
+    span.tag {
+        padding: 2px 5px;
+        height: 22px;
+        line-height: 18px;
+        color: #fff;
+        font-family: @font-family-base;
+        font-weight: 600;
+        background-color: @brand-primary;
+        border: none;
+
+        a {
+            font-size: 13px;
+            color: rgba(255,255,255,.5);
+
+            &:hover {
+                color: rgba(255,255,255,.75);
+            }
+        }
+    }
+}
+
+// Select2
+.select2-container {
+    .select2-selection--single {
+        height: 34px;
+    }
+
+    .select2-dropdown {
+        border-color: @form-border-color;
+        .border-bottom-radius(3px);
+    }
+}
+
+.select2-container--default {
+    .select2-selection--single {
+        border-color: @form-border-color;
+        border-radius: 3px;
+
+        .select2-selection__rendered {
+            padding-left: 12px;
+            line-height: 34px;
+
+            .form-material & {
+                padding-left: 0;
+            }
+        }
+
+        .select2-selection__arrow {
+            height: 34px;
+        }
+
+        .form-material & {
+            border: none;
+            border-bottom: 1px solid @form-border-color;
+            border-radius: 0;
+        }
+
+        .select2-selection__placeholder {
+            color: #aaa;
+        }
+    }
+
+    .select2-selection--multiple,
+    &.select2-container--focus .select2-selection--multiple {
+        border-color: @form-border-color;
+        border-radius: 3px;
+
+        .form-material & {
+            border: none;
+            border-bottom: 1px solid @form-border-color;
+            border-radius: 0;
+        }
+
+        & .select2-selection__rendered {
+            padding-right: 12px;
+            padding-left: 12px;
+
+            .form-material & {
+                padding-left: 0;
+            }
+        }
+    }
+
+    .select2-selection--multiple {
+        .select2-selection__choice {
+            height: 22px;
+            line-height: 22px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            background-color: @brand-primary;
+            border: none;
+            border-radius: 3px;
+        }
+
+        .select2-selection__choice__remove {
+            margin-right: 5px;
+            color: rgba(255,255,255,.5);
+
+            &:hover {
+                color: rgba(255,255,255,.75);
+            }
+        }
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        border-color: @form-border-color;
+    }
+
+    .select2-results__option--highlighted[aria-selected] {
+        background-color: @brand-primary;
+    }
+
+    .select2-search--inline .select2-search__field {
+        padding-right: 0;
+        padding-left: 0;
+        font-family: @font-family-base;
+        .box-shadow(none);
+
+        .form-material & {
+            padding-left: 0;
+        }
+    }
+}
+
+.select2-search--dropdown .select2-search__field {
+    padding: 6px 12px;
+    font-family: @font-family-base;
+    border-radius: 3px;
+    .box-shadow(none);
+}
+
+// Slick
+.slick-slider {
+    margin-bottom: 45px;
+
+    &.slick-padding-dots {
+        padding-bottom: 45px;
+        margin-bottom: 0;
+
+        .slick-dots {
+            bottom: 0;
+        }
+    }
+
+    &.slick-nav-hover {
+        .slick-prev,
+        .slick-next {
+            opacity: 0;
+            .transition(opacity .25s ease-out);
+        }
+
+        &:hover {
+            .slick-prev,
+            .slick-next {
+                opacity: .25;
+
+                &:hover {
+                    opacity: .6;
+                }
+            }
+        }
+    }
+
+    &.slick-nav-white {
+        .slick-prev,
+        .slick-next {
+            background-color: #fff;
+
+            &:hover {
+                background-color: #fff;
+            }
+
+            &:before {
+                color: #000;
+            }
+        }
+    }
+
+    .slick-dots {
+        bottom: -45px;
+    }
+
+    .slick-prev,
+    .slick-next {
+        margin-top: -15px;
+        width: 40px;
+        height: 40px;
+        text-align: center;
+        background-color: #000;
+        opacity: .25;
+
+        &:hover {
+            background-color: #000;
+            opacity: .6;
+        }
+
+        &:before {
+            font-family: 'FontAwesome';
+            font-size: 14px;
+            line-height: 28px;
+        }
+    }
+
+    .slick-prev {
+        left: 10px;
+
+        &:before {
+            content: "\f060";
+        }
+    }
+
+    .slick-next {
+        right: 10px;
+
+        &:before {
+            content: "\f061";
+        }
+    }
+}
+
+// Summernote
+.note-editor {
+    border-color: #ddd;
+
+    .note-toolbar {
+        border-bottom-color: #ddd;
+    }
+
+    .note-statusbar .note-resizebar {
+        border-top-color: #ddd;
+    }
+
+    .note-toolbar.btn-toolbar {
+        margin-left: 0;
+    }
+}
+
+// jQuery Sparkline
+.jqstooltip {
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    border: none !important;
+    background-color: rgba(0,0,0,.75) !important;
+}
+
+// Easy Pie Chart
+.pie-chart {
+    position: relative;
+    display: inline-block;
+
+    > span {
+        .vertical-align();
+        margin-top: -2px;
+        right: 0;
+        left: 0;
+        text-align: center;
+    }
+}
+
+// Flot Charts
+.flot-tooltip {
+    position: absolute;
+    display: none;
+    color: #fff;
+    background: rgba(0,0,0,.75);
+    padding: 4px 8px;
+}
+
+.flot-pie-label {
+    font-size: 13px;
+    text-align: center;
+    padding: 4px 8px;
+    color: #fff;
+}
+
+.legend > table td {
+    padding: 3px 4px;
+    font-size: 14px;
+}
+
+// FullCalendar
+.fc-event {
+    padding-left: 3px;
+    padding-right: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: rgba(0,0,0,.75);
+    border: 1px solid #b5d0eb;
+    background-color: #b5d0eb;
+    border-radius: 0;
+
+    &:hover {
+        color: rgba(0,0,0,.75);
+    }
+}
+
+.fc button {
+    height: 34px;
+    line-height: 34px;
+    font-weight: 600;
+}
+
+.fc-state-default.fc-corner-left {
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+}
+
+.fc-state-default.fc-corner-right {
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+}
+
+.fc-state-default {
+    color: @gray-darker;
+    background-color: @gray-light;
+    background-image: none;
+    border: 1px solid #e6e6e6;
+    text-shadow: none;
+    box-shadow: none;
+}
+
+.fc-state-hover,
+.fc-state-down,
+.fc-state-active,
+.fc-state-disabled {
+    color: @gray-darker;
+    background-color: darken(@gray-light, 8%);
+    border-color: darken(#e6e6e6, 12%);
+}
+
+.fc-state-hover {
+    color: #393939;
+    .transition(all .15s ease-out);
+}
+
+.fc-state-down,
+.fc-state-active {
+    background-color: darken(@gray-light, 18%);
+    border-color: darken(#e6e6e6, 22%);;
+    box-shadow: none;
+}
+
+.fc-state-disabled {
+    opacity: .35;
+}
+
+.fc-toolbar {
+    margin-bottom: 29px;
+
+    h2 {
+        font-weight: 400;
+    }
+}
+
+.fc thead th.fc-widget-header {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    background-color: #f9f9f9;
+}
+
+.fc-unthemed th,
+.fc-unthemed td,
+.fc-unthemed hr,
+.fc-unthemed thead,
+.fc-unthemed tbody,
+.fc-unthemed .fc-row,
+.fc-unthemed .fc-popover {
+    border-color: #eee;
+}
+
+// HTML5 Placeholder
+.placeholder {
+    color: #aaa;
+}

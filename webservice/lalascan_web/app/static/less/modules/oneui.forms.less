@@ -1,0 +1,389 @@
+//
+// Forms
+// --------------------------------------------------
+
+// Material Inputs
+.form-material {
+    position: relative;
+    margin: 10px 0 10px;
+
+    // Labels
+    > label {
+        position: absolute;
+        top: 6px;
+        left: 0;
+        font-size: 13px;
+        font-weight: 600;
+        .translateY(-24px);
+    }
+
+    &.floating > label {
+        font-size: 15px;
+        font-weight: 400;
+        cursor: text;
+        z-index: 10;
+        .transition(all .15s ease-out);
+        .translateY(0);
+    }
+
+    // Form controls and input addons
+    > .form-control {
+        padding-left: 0;
+        padding-right: 0;
+        border: 0;
+        border-radius: 0;
+        background-color: transparent;
+        .box-shadow(0 1px 0 @form-border-color);
+
+        &:focus {
+            background-color: transparent;
+            .box-shadow(0 2px 0 @text-color);
+
+            + label {
+                color: @text-color;
+            }
+
+            ~ .input-group-addon {
+                .box-shadow(0 2px 0 @text-color);
+            }
+        }
+    }
+
+    & > .form-control:focus + label,
+    &.floating.open > label {
+        font-size: 13px;
+        font-weight: 600;
+        cursor: default;
+        .translateY(-24px);
+    }
+
+    .form-control[disabled],
+    .form-control[readonly],
+    fieldset[disabled] .form-control {
+        background-color: #fff;
+        border-bottom: 1px dashed #ccc;
+        .box-shadow(none);
+    }
+
+    &.input-group .input-group-addon {
+        border: none;
+        background-color: transparent;
+        border-radius: 0 !important;
+        .box-shadow(0 1px 0 @form-border-color);
+        .transition(all .15s ease-out);
+    }
+
+    // Form Focus Variations
+    &.form-material-primary > .form-control {
+        .form-control-material-focus-variant(@brand-primary);
+    }
+
+    &.form-material-success > .form-control {
+        .form-control-material-focus-variant(@brand-success);
+    }
+
+    &.form-material-info > .form-control {
+        .form-control-material-focus-variant(@brand-info);
+    }
+
+    &.form-material-warning > .form-control {
+        .form-control-material-focus-variant(@brand-warning);
+    }
+
+    &.form-material-danger > .form-control {
+        .form-control-material-focus-variant(@brand-danger);
+    }
+
+    // Form State Variations
+    .has-success & {
+        .form-control-material-state-variant(@brand-success);
+    }
+
+    .has-info & {
+        .form-control-material-state-variant(@brand-info);
+    }
+
+    .has-warning & {
+        .form-control-material-state-variant(@brand-warning);
+    }
+
+    .has-error & {
+        .form-control-material-state-variant(@brand-danger);
+    }
+}
+
+// CSS Inputs (Checkboxes + Radios + Switches) - Base class
+.css-input {
+    position: relative;
+    display: inline-block;
+    margin: 2px 0;
+    font-weight: 400;
+    cursor: pointer;
+
+    input {
+        position: absolute;
+        opacity: 0;
+
+        &:focus + span {
+
+            box-shadow: 0 0 3px rgba(0,0,0,.25);
+        }
+
+        + span {
+            position: relative;
+            display: inline-block;
+            margin-top: -2px;
+            margin-right: 3px;
+            vertical-align: middle;
+
+            &:after {
+                position: absolute;
+                content: "";
+            }
+        }
+    }
+}
+
+// CSS Checkboxes
+.css-checkbox {
+    margin: 7px 0;
+
+    input {
+        + span {
+            width: 20px;
+            height: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            .transition(background-color .2s);
+
+            &:after {
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                font-family: "FontAwesome";
+                font-size: 10px;
+                color: #fff;
+                line-height: 18px;
+                content: "\f00c";
+                text-align: center;
+            }
+        }
+    }
+
+    &:hover input + span {
+        border-color: #ccc;
+    }
+
+    // Variations
+    &&-sm {
+        margin: 9px 0 8px;
+        font-size: 12px;
+
+        input + span {
+            width: 16px;
+            height: 16px;
+
+            &:after {
+                font-size: 8px;
+                line-height: 15px;
+            }
+        }
+    }
+
+    &&-lg {
+        margin: 3px 0;
+
+        input + span {
+            width: 30px;
+            height: 30px;
+
+            &:after {
+                font-size: 12px;
+                line-height: 30px;
+            }
+        }
+    }
+
+    &&-rounded input + span {
+        border-radius: 3px;
+    }
+
+    &-default input:checked + span {
+        background-color: @gray-dark;
+        border-color: @gray-dark;
+    }
+
+    &-primary input:checked + span {
+        background-color: @brand-primary;
+        border-color: @brand-primary;
+    }
+
+    &-info input:checked + span {
+        background-color: @brand-info;
+        border-color: @brand-info;
+    }
+
+    &-success input:checked + span {
+        background-color: @brand-success;
+        border-color: @brand-success;
+    }
+
+    &-warning input:checked + span {
+        background-color: @brand-warning;
+        border-color: @brand-warning;
+    }
+
+    &-danger input:checked + span {
+        background-color: @brand-danger;
+        border-color: @brand-danger;
+    }
+}
+
+// CSS Radios
+.css-radio {
+    margin: 7px 0;
+
+    input {
+        + span {
+            width: 20px;
+            height: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 50%;
+
+            &:after {
+                top: 2px;
+                right: 2px;
+                bottom: 2px;
+                left: 2px;
+                background-color: #fff;
+                border-radius: 50%;
+                opacity: 0;
+                .transition(opacity .2s ease-out);
+            }
+        }
+
+        &:checked + span:after {
+            opacity: 1;
+        }
+    }
+
+    &:hover input + span {
+        border-color: #ccc;
+    }
+
+    // Variations
+    &&-sm {
+        margin: 9px 0 8px;
+        font-size: 12px;
+
+        input + span {
+            width: 16px;
+            height: 16px;
+        }
+    }
+
+    &&-lg {
+        margin: 5px 0;
+
+        input + span {
+            width: 26px;
+            height: 26px;
+        }
+    }
+
+    &-default input:checked + span:after { background-color: @gray-dark; }
+    &-primary input:checked + span:after { background-color: @brand-primary; }
+    &-info input:checked + span:after { background-color: @brand-info; }
+    &-success input:checked + span:after { background-color: @brand-success; }
+    &-warning input:checked + span:after { background-color: @brand-warning; }
+    &-danger input:checked + span:after { background-color: @brand-danger; }
+}
+
+// CSS Switches
+.switch {
+    margin: 3px 0;
+
+    input {
+        + span {
+            width: 54px;
+            height: 30px;
+            background-color: #eee;
+            border-radius: 30px;
+            .transition(background-color .4s);
+
+            &:after {
+                top: 2px;
+                bottom: 2px;
+                left: 2px;
+                width: 26px;
+                background-color: #fff;
+                border-radius: 50%;
+                .box-shadow(1px 0 3px rgba(0,0,0,.1));
+                .transition-transform(.15s ease-out);
+            }
+        }
+
+        &:checked + span {
+            background-color: #ddd;
+
+            &:after {
+                .box-shadow(-2px 0 3px rgba(0,0,0,.2));
+                .translateX(23px);
+            }
+        }
+    }
+
+    // Variations
+    &&-sm {
+        margin: 8px 0 7px;
+        font-size: 12px;
+
+        input {
+            + span {
+                width: 36px;
+                height: 20px;
+
+                &:after {
+                    width: 16px;
+                }
+            }
+
+            &:checked + span:after {
+                .translateX(15px);
+            }
+        }
+    }
+
+    &&-lg {
+        margin: 1px 0;
+
+        input {
+            + span {
+                width: 70px;
+                height: 34px;
+
+                &:after {
+                    width: 30px;
+                }
+            }
+
+            &:checked + span:after {
+                .translateX(35px);
+            }
+        }
+    }
+
+    &&-square input + span,
+    &&-square input + span:after {
+        border-radius: 0;
+    }
+
+    &-default input:checked + span { background-color: @gray-dark; }
+    &-primary input:checked + span { background-color: @brand-primary; }
+    &-info input:checked + span { background-color: @brand-info; }
+    &-success input:checked + span { background-color: @brand-success; }
+    &-warning input:checked + span { background-color: @brand-warning; }
+    &-danger input:checked + span { background-color: @brand-danger; }
+}

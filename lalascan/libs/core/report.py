@@ -159,50 +159,6 @@ class TextReport():
                 print >>self.__fd, self.__colorize("%d vulnerabilities found!" % count, "red")
                 print >>self.__fd, ""
 
-            '''
-            vuln_types = { v.display_name: v.vulnerability_type for v in self.__iterate(Data.TYPE_VULNERABILITY) }
-            titles = vuln_types.keys()
-            titles.sort()
-
-            for title in titles:
-                data_subtype = vuln_types[title]
-                print >>self.__fd, "-- %s (%s) -- " % (self.__colorize(title, "cyan"), data_subtype)
-                print >>self.__fd, ""
-                for vuln in self.__iterate(Data.TYPE_VULNERABILITY, data_subtype):
-                    table = Texttable()
-                    table.header(("Occurrence ID", vuln.identity))
-                    w = len(table.draw())
-                    table.add_row(("Title", vuln.title))
-                    ##targets = self.__gather_vulnerable_resources(vuln)
-                    targets = [vuln.target]
-                    #table.add_row(("Found By", get_plugin_name(vuln.plugin_id)))
-                    table.add_row("Found By", "test")
-                    p = len(table.draw())
-                    table.add_row(("Level", vuln.level))
-                    #table.add_row(("Impact", vuln.impact))
-                    #table.add_row(("Severity", vuln.severity))
-                    #table.add_row(("Risk", vuln.risk))
-                    q = len(table.draw())
-                    taxonomy = []
-                    details = vuln.display_properties.get("Details")
-                    if details:
-                        props = details.keys()
-                        props.sort()
-                        table.add_row(("Additional details", "\n".join(("%s: %s" % (x, details[x])) for x in props)))
-                    self.__fix_table_width(table)
-                    text = table.draw()
-                    if self.__color:
-                        text_1 = text[:w]
-                        text_3 = text[p:q]
-                        text_1 = colorize_substring(text_1, vuln.identity, vuln.level.lower())
-                        for lvl in WebVulnerability.VULN_LEVELS:
-                            if lvl in text_3:
-                                text_3 = colorize_substring(text_3, lvl, lvl.lower())
-                        text = text_1 + text[w:p] + text_3 + text[q:]
-                    print >>self.__fd, text
-                    print >>self.__fd, ""
-            '''
-
             if vulresult.qsize() > 0:
                 table = Texttable()
                 table.add_row(["Vul Type", "Vul Url", "Vul Parameter", "Payload", "Method", "Risk"])

@@ -1,0 +1,169 @@
+//
+// Images (links and hover options)
+// --------------------------------------------------
+
+// Avatar
+.img-avatar {
+    display: inline-block !important;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+
+    &.img-avatar32 {
+        width: 32px;
+        height: 32px;
+    }
+
+    &.img-avatar48 {
+        width: 48px;
+        height: 48px;
+    }
+
+    &.img-avatar96 {
+        width: 96px;
+        height: 96px;
+    }
+
+    &.img-avatar128 {
+        width: 128px;
+        height: 128px;
+    }
+
+    &-thumb {
+        margin: 5px;
+        .box-shadow(0 0 0 5px rgba(255,255,255,.4));
+    }
+}
+
+// Image Thumb
+.img-thumb {
+    padding: 5px;
+    background-color: #fff;
+    border-radius: 2px;
+}
+
+// Image Link
+.img-link {
+    display: inline-block;
+    cursor: -webkit-zoom-in;
+    cursor: zoom-in;
+    .transition-transform(.15s ease-out);
+
+    &:hover {
+        .rotate(1deg);
+    }
+}
+
+// Image Hover Options
+.img-container {
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
+    display: block;
+
+    .img-options {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1;
+        content: "";
+        background-color: rgba(0,0,0,.6);
+        opacity: 0;
+        visibility: none;
+        .transition(all .25s ease-out);
+
+        &-content {
+            .vertical-align();
+            right: 0;
+            left: 0;
+            text-align: center;
+        }
+    }
+
+    > img {
+        .transition-transform(.35s ease-out);
+    }
+
+    &:hover {
+        .img-options {
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+
+    // Image hover effects
+    &.fx-img-zoom-in:hover > img {
+        .scale(1.2);
+    }
+
+    &.fx-img-rotate-r:hover > img {
+        .transform(scale(1.4), rotate(8deg));
+    }
+
+    &.fx-img-rotate-l:hover > img {
+        .transform(scale(1.4), rotate(-8deg));
+    }
+
+    // Image options hover effects
+    &.fx-opt-slide-top {
+        .img-options {
+            .translateY(100%);
+        }
+
+        &:hover .img-options {
+            .translateY(0);
+        }
+    }
+
+    &.fx-opt-slide-right {
+        .img-options {
+            .translateX(-100%);
+        }
+
+        &:hover .img-options {
+            .translateX(0);
+        }
+    }
+
+    &.fx-opt-slide-down {
+        .img-options {
+            .translateY(-100%);
+        }
+
+        &:hover .img-options {
+            .translateY(0);
+        }
+    }
+
+    &.fx-opt-slide-left {
+        .img-options {
+            .translateX(100%);
+        }
+
+        &:hover .img-options {
+            .translateX(0);
+        }
+    }
+
+    &.fx-opt-zoom-in {
+        .img-options {
+            .scale(0);
+        }
+
+        &:hover .img-options {
+            .scale(1);
+        }
+    }
+
+    &.fx-opt-zoom-out {
+        .img-options {
+            .scale(2);
+        }
+
+        &:hover .img-options {
+            .scale(1);
+        }
+    }
+}

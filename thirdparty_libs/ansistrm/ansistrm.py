@@ -5,7 +5,6 @@ import logging
 import os
 import re
 
-
 class ColorizingStreamHandler(logging.StreamHandler):
     # color names to indices
     color_map = {

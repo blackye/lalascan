@@ -64,6 +64,3 @@ coverage.xml
 
 #policy
 scanpolicy/
-
-#webservice
-webservice/

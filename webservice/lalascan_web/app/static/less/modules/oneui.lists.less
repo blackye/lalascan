@@ -1,0 +1,163 @@
+//
+// Lists
+// --------------------------------------------------
+
+// Base List
+.list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    > li {
+        position: relative;
+    }
+}
+
+// Timeline
+.list-timeline {
+    position: relative;
+    padding-top: 10px;
+
+    > li {
+        margin-bottom: 10px;
+    }
+
+    & &-time {
+        margin: 0 -20px;
+        padding: 10px 20px 10px 40px;
+        min-height: 40px;
+        text-align: right;
+        color: #999;
+        font-size: 13px;
+        font-style: italic;
+        background-color: #f9f9f9;
+        border-radius: 2px;
+    }
+
+    & &-icon {
+        position: absolute;
+        top: 5px;
+        left: 10px;
+        width: 30px;
+        height: 30px;
+        line-height: 30px;
+        color: #fff;
+        text-align: center;
+        border-radius: 50%;
+    }
+
+    & &-content {
+        padding: 10px 10px 1px;
+
+        > p:first-child {
+            margin-bottom: 0;
+        }
+    }
+
+    @media screen and (min-width: @screen-sm-min) {
+        padding-top: 20px;
+
+        &:before {
+            position: absolute;
+            top: 0;
+            left: 120px;
+            bottom: 0;
+            display: block;
+            width: 4px;
+            content: "";
+            background-color: #f9f9f9;
+            z-index: 1;
+        }
+
+        > li {
+            min-height: 40px;
+            z-index: 2;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        & &-time {
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+            padding-right: 0;
+            padding-left: 0;
+            width: 90px;
+            background-color: transparent;
+        }
+
+        & &-icon {
+            top: 3px;
+            left: 105px;
+            width: 34px;
+            height: 34px;
+            line-height: 34px;
+            z-index: 2 !important;
+        }
+
+        & &-content {
+            padding-left: 160px;
+        }
+    }
+}
+
+// Activity
+.list-activity > li {
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    padding-left: 30px;
+    font-size: 13px;
+    border-bottom: 1px solid @gray-light;
+
+    > i:first-child {
+        position: absolute;
+        left: 0;
+        top: 0;
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+        font-size: 14px;
+        text-align: center;
+    }
+}
+
+// Events
+.list-events > li {
+    margin-bottom: 5px;
+    padding: 8px 30px 8px 10px;
+    color: rgba(0,0,0,.5);
+    font-size: 13px;
+    font-weight: 700;
+    background-color: #b5d0eb;
+
+    &:before {
+        .align-v();
+        right: 10px;
+        display: inline-block;
+        font-family: 'FontAwesome';
+        color: rgba(255,255,255,.75);
+        content: "\f073";
+    }
+
+    &:hover {
+        cursor: move;
+    }
+}
+
+// Simple
+.list-simple > li {
+    margin-bottom: 20px;
+}
+
+.list-simple-mini > li {
+    margin-bottom: 10px;
+}
+
+// List li clearfix
+.list-li-clearfix > li {
+    .clearfix();
+}
