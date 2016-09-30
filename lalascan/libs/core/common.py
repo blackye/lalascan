@@ -5,9 +5,11 @@ __author__ = 'BlackYe.'
 
 import os
 
-from .settings import BANNER
+
+from lalascan.api.exception import LalascanTypeError, LalascanValueError
+
+from lalascan.libs.core.settings import BANNER
 from lalascan.libs.core.settings import BANNER, UNICODE_ENCODING
-from lalascan.libs.core.globaldata import logger
 from lalascan.libs.core.logger import LOGGER_HANDLER
 
 from lalascan.data.enum import CUSTOM_LOGGING
@@ -20,6 +22,10 @@ from thirdparty_libs.colorizer import colored
 from urllib import quote, quote_plus, unquote, unquote_plus
 import sys
 import re
+import datetime, time
+import random
+import hashlib
+import urllib
 
 def banner():
     """
@@ -72,32 +78,6 @@ def _setColor(message, bold=False):
     return retVal
 
 
-class Singleton (object):
-    """
-    Implementation of the Singleton pattern.
-    """
-    _instance = None
-
-    def __new__(cls):
-
-        # If the singleton has already been instanced, return it.
-        if cls._instance is not None:
-            return cls._instance
-
-        # Create the singleton's instance.
-        cls._instance = super(Singleton, cls).__new__(cls)
-
-        # Call the constructor.
-        cls.__init__(cls._instance)
-
-        # Delete the constructor so it won't be called again.
-        cls._instance.__init__ = object.__init__
-        cls.__init__ = object.__init__
-
-        # Return the instance.
-        return cls._instance
-
-
 try:
     # The fastest JSON parser available for Python.
     from cjson import decode as json_decode
@@ -145,6 +125,19 @@ def multiple_replace(text, adict):
         return adict[match.group(0)]
     return rx.sub(oneXlat, text)
 
+#--------------------------------------------------------
+# http option
+
+def get_domain(url):
+    if isinstance(url, str):
+        try:
+            protocol, __ = urllib.splittype(url)
+            host = urllib.splitnport(urllib.splithost(__)[0])
+            return host[0]
+        except Exception:
+            return None
+
+
 
 def post_query(query):
 
@@ -174,3 +167,22 @@ def cookie_query(cookie_query):
         ##raise   # XXX DEBUG
         cookie_params = {}
     return cookie_params
+
+#---------------------------------------------
+
+def generate_audit_name(url):
+
+    if not isinstance(url, str):
+        raise LalascanTypeError('target url %s must bu STR_Object' % url)
+
+    domain = get_domain(url)
+    if domain is not None:
+        cur_time =  str(int(time.mktime(datetime.datetime.now().timetuple())))
+        seed =  ''.join(random.sample('abcdefghijklmnopqrstuvwxyz!@#$%^&*', 5))
+        __ = hashlib.md5()
+        __.update(cur_time + seed)
+        return '{0}_{1}'.format(domain, __.hexdigest())
+    else:
+        raise LalascanValueError('target audit_name type error!')
+
+

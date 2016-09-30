@@ -4,7 +4,7 @@
 __author__ = 'BlackYe.'
 
 
-from lalascan.libs.core.globaldata import conf, logger
+from lalascan.libs.core.globaldata import conf, L
 from lalascan.data.enum import CUSTOM_LOGGING
 from lalascan.libs.core.common import readfile, multiple_replace
 from lalascan.libs.core.settings import PLUGIN_SUFFIX
@@ -59,13 +59,13 @@ class PluginManager(object):
             try:
                 self._load_plugin_by_name(plugin_name)
             except LalascanFileNotFoundException,e:
-                logger.log_error(str(e))
+                L.logger.log_error(str(e))
             except LalascanSystemException,e:
-                logger.log_error(str(e))
+                L.logger.log_error(str(e))
 
             except ImportError, ex:
                 errmsg = "%s register failed \"%s\"" % (plugin_name, str(ex))
-                logger.log_error(errmsg)
+                L.logger.log_error(errmsg)
 
     def _load_plugin_by_name(self, plugin_name):
         try:
@@ -80,14 +80,14 @@ class PluginManager(object):
                 importer.load_module(plugin_name)
 
         except LalascanFileNotFoundException,e:
-            logger.log_error(str(e))
+            L.logger.log_error(str(e))
 
         except LalascanSystemException,e:
-            logger.log_error(str(e))
+            L.logger.log_error(str(e))
 
         except ImportError, ex:
             errmsg = "%s register failed \"%s\"" % (plugin_name, str(ex))
-            logger.log_error(errmsg)
+            L.logger.log_error(errmsg)
             #logger.log(CUSTOM_LOGGING.ERROR, errMsg)
 
         return
@@ -131,7 +131,7 @@ class PluginManager(object):
                 #plugin_content += PLUGIN_REGISTER_STRING.format(className)
 
                 warnmsg = "plugin: %s not register" % plugin_name
-                logger.log_warning(warnmsg)
+                L.logger.log_warning(warnmsg)
                 retval = ''
             else:
                 #retval = multiple_replace(plugin_content, PLUGIN_IMPORTDICT)

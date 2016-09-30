@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8">
 
-        <title>OneUI</title>
+        <title>Lalascan云安全平台</title>
 
         <meta name="description" content="OneUI - Admin Dashboard Template & UI Framework created by pixelcave and published on Themeforest">
         <meta name="author" content="pixelcave">
@@ -158,16 +158,24 @@
                                 </li>
                                 <li class="nav-main-heading"><span class="sidebar-mini-hide">Web漏洞扫描</span></li>
                                 <li>
-                                    <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-badge"></i><span class="sidebar-mini-hide">添加任务</span></a>
+                                    <a class="nav-submenu" data-toggle="nav-submenu" href="/webscan/add_task"><i class="si si-badge"></i><span class="sidebar-mini-hide">添加任务</span></a>
                                 </li>
                                 <li>
-                                    <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-grid"></i><span class="sidebar-mini-hide">历史扫描结果</span></a>
+                                    <a class="nav-submenu" data-toggle="nav-submenu" href="/webscan/scanner"><i class="si si-grid"></i><span class="sidebar-mini-hide">历史扫描结果</span></a>
                                 </li>
                                 <li>
                                     <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-note"></i><span class="sidebar-mini-hide">添加插件</span></a>
                                 </li>
                                 <li>
-                                    <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-fire"></i><span class="sidebar-mini-hide">插件列表</span></a>
+                                    <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-grid"></i><span class="sidebar-mini-hide">策略规则</span></a>
+                                    <ul>
+                                        <li>
+                                            <a href="/webscan/leakinfo">漏洞类型分布</a>
+                                        </li>
+                                        <li>
+                                            <a href="/webscan/policy">策略规则列表</a>
+                                        </li>
+                                    </ul>
                                 </li>
                                 <li>
                                     <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-fire"></i><span class="sidebar-mini-hide">任务管理</span></a>
@@ -344,5 +352,13 @@
 
         <!-- Page JS Code -->
         <script src="/static/js/pages/base_comp_animations.js"></script>
+
+        <!-- Page JS Code -->
+        <script>
+            $(function () {
+                // Init page helpers (Table Tools helper)
+                App.initHelpers('table-tools');
+            });
+        </script>
     </body>
 </html>

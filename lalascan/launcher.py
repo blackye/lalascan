@@ -41,8 +41,9 @@ def run():
 
 def get_multiple_target():
     #infocollect
+
     if conf.bspider:
-        spider_task()
+        spider_task(conf.audit_name)
 
     else:
         if conf.post_data is not None:

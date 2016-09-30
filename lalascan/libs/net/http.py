@@ -11,7 +11,7 @@ from lalascan.api.exception import LalascanNetworkException, LalascanNetworkOutO
 from .web_utils import detect_auth_method, get_auth_obj
 from ...data.http import HTTP_Request, HTTP_Response, HTTP_Raw_Request
 from ...data.resource.url import URL
-from ..core.common import Singleton
+from ..core.singletonclass import Singleton
 from ...libs.core.globaldata import conf
 
 from hashlib import md5

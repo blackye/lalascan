@@ -3,14 +3,9 @@
 
 __author__ = 'BlackYe.'
 
+from . import db
 
-from flask.ext.sqlalchemy import SQLAlchemy
-
-
-db = SQLAlchemy()
-
-
-class STarget(db.Model):
+class STarget(db.BaseModel):
 
     __tablename__ = 'spider_target'
 
@@ -23,3 +18,4 @@ class STarget(db.Model):
     def query(cls):
         return cls.query.all()
     '''
+

@@ -7,17 +7,22 @@ __author__ = 'BlackYe.'
 global var data
 '''
 
-from lalascan.libs.core.logger import ScanLog
+from lalascan.libs.core.logger import _ScanLog
 from lalascan.data.datatype import AttribDict
 from multiprocessing import Queue
-
-# logger
-logger = ScanLog()
 
 # object to share within function and classes command
 # line options and settings
 conf = AttribDict()
 conf.audit_scope = AttribDict()
+
+# logger
+class L(object):
+    logger = None
+
+    @classmethod
+    def set_logfilepath(cls, audit_name):
+        L.logger = _ScanLog(audit_name)
 
 #global multiprocessing result var
 vulresult = Queue()

@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Main Container -->
+<main id="main-container">
+    <!-- Page Header -->
+    <div class="content bg-gray-lighter">
+        <div class="row items-push">
+            <div class="col-sm-8">
+                <h1 class="page-heading">
+                    添加新扫描任务
+                </h1>
+            </div>
+            <div class="col-sm-4 text-right hidden-xs">
+                <ol class="breadcrumb push-10-t">
+                    <li>首页</li>
+                    <li><a class="link-effect" href="">Animations</a></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <!-- END Page Header -->
+
+    <!-- Page Content -->
+    <div class="content content-narrow">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#faq4" href="#faq4_q1"><i class="si si-list"></i> 设置参数并添加任务</a>
+                    </h3>
+                </div>
+                <div id="faq4_q1" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                        <form class="form-horizontal push-10-t" action="base_pages_faq.html" method="post" onsubmit="return false;">
+                            <h2 class="content-heading">基本扫描配置</h2>
+                            <div class="block">
+                                <div class="block-content block-content-full">
+                                    <div class="row js-animation-section">
+
+                                        <div class="form-group">
+                                            <div class="col-xs-8 col-sm-10">
+                                                <div class="form-material form-material-primary">
+                                                    <label for="faq-contact-firstname">扫描模式</label>
+                                                </div>
+                                                <label class="css-input css-radio css-radio-warning push-10-r">
+                                                    <input type="radio" name="mega-gender-group" checked = "checked"><span></span>域名爬扫
+                                                </label>
+                                                <label class="css-input css-radio css-radio-warning">
+                                                    <input type="radio" name="mega-gender-group"><span></span>单CGI扫描
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="col-xs-8 col-sm-7">
+                                                <div class="form-material form-material-primary">
+                                                    <input class="form-control" type="text" id="faq-contact-firstname" name="faq-contact-firstname" placeholder="请输入网址，例如http://www.baidu.com">
+                                                    <label for="faq-contact-firstname">扫描入口</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-8 col-sm-5">
+                                                <div class="form-material form-material-primary">
+                                                    <input class="form-control" type="text" id="" name="faq-contact-firstname" placeholder="">
+                                                    <label for="faq-contact-firstname">POST值:</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-sm-8 col-md-11">
+                                    <h2 class="content-heading">扫描插件</h2>
+                                        <!-- Block Tabs Justified Default Style -->
+                                        <div class="row form-material form-material-primary">
+                                            <ul class="nav nav-tabs nav-justified" data-toggle="tabs">
+                                                <li class="active">
+                                                    <a href="#btabs-static-justified-home"><i class="fa fa-home"></i> 通用常见漏洞</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#btabs-static-justified-profile"><i class="fa fa-pencil"></i> WebApps应用程序漏洞</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#btabs-static-justified-settings"><i class="fa fa-cog"></i> 系统中间件漏洞</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#btabs-static-justified-settings"><i class="fa fa-cog"></i> 子域名收集</a>
+                                                </li>
+                                            </ul>
+                                            <div class="block-content tab-content">
+                                                <div class="tab-pane active" id="btabs-static-justified-home">
+                                                    <h4 class="font-w300 push-15">常见漏洞插件</h4>
+                                                        <div class="block">
+                                                            <div class="block-content">
+                                                                <!-- If you put a checkbox in thead section, it will automatically toggle all tbody section checkboxes -->
+                                                                <table class="js-table-checkable table table-hover">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th class="text-center" style="width: 70px;">
+                                                                                <label class="css-input css-checkbox css-checkbox-primary remove-margin-t remove-margin-b">
+                                                                                    <input type="checkbox" id="check-all" name="check-all"><span></span>全选/反选
+                                                                                </label>
+                                                                            </th>
+                                                                            <th>插件名</th>
+                                                                            <th class="hidden-xs" style="width: 12%;">插件作者</th>
+                                                                            <th class="hidden-xs" style="width: 15%;">漏洞危害</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td class="text-center">
+                                                                                <label class="css-input css-checkbox css-checkbox-primary">
+                                                                                    <input type="checkbox" id="row_1" name="row_1"><span></span>
+                                                                                </label>
+                                                                            </td>
+                                                                            <td>
+                                                                                <p class="font-w600 push-10">SQL注入</p>
+                                                                                <p class="text-muted remove-margin-b">Customer details and further information</p>
+                                                                            </td>
+                                                                            <td class="hidden-xs">
+                                                                                <span class="label label-info">admin</span>
+                                                                            </td>
+                                                                            <td class="hidden-xs">
+                                                                                <em class="text-muted">June 4, 2015 12:16</em>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="text-center">
+                                                                                <label class="css-input css-checkbox css-checkbox-primary">
+                                                                                    <input type="checkbox" id="row_3" name="row_3"><span></span>
+                                                                                </label>
+                                                                            </td>
+                                                                            <td>
+                                                                                <p class="font-w600 push-10">反射XSS</p>
+                                                                                <p class="text-muted remove-margin-b">Customer details and further information</p>
+                                                                            </td>
+                                                                            <td class="hidden-xs">
+                                                                                <span class="label label-warning">admin</span>
+                                                                            </td>
+                                                                            <td class="hidden-xs">
+                                                                                <em class="text-muted">June 6, 2015 12:16</em>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="text-center">
+                                                                                <label class="css-input css-checkbox css-checkbox-primary">
+                                                                                    <input type="checkbox" id="row_4" name="row_4"><span></span>
+                                                                                </label>
+                                                                            </td>
+                                                                            <td>
+                                                                                <p class="font-w600 push-10">DOM-XSS</p>
+                                                                                <p class="text-muted remove-margin-b">Customer details and further information</p>
+                                                                            </td>
+                                                                            <td class="hidden-xs">
+                                                                                <span class="label label-info">admin</span>
+                                                                            </td>
+                                                                            <td class="hidden-xs">
+                                                                                <em class="text-muted">June 5, 2015 12:16</em>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                        <!-- END Checkable Table -->
+                                                    </div>
+                                                <div class="tab-pane" id="btabs-static-justified-profile">
+                                                    <h4 class="font-w300 push-15">Profile Tab</h4>
+                                                    <p>...</p>
+                                                </div>
+                                                <div class="tab-pane" id="btabs-static-justified-settings">
+                                                    <h4 class="font-w300 push-15">Settings Tab</h4>
+                                                    <p>...</p>
+                                                </div>
+                                            </div>
+                                        <!-- END Block Tabs Justified Alternative Style -->
+                                        </div>
+                                    <!-- END Justified Tabs -->
+                                </div>
+                            </div>
+
+                            <h2 class="content-heading">高级扫描配置</h2>
+                            <div class="block">
+                                <div class="block-content block-content-full">
+                                    <div class="row js-animation-section">
+                                        <div class="form-group">
+                                            <div class="col-xs-8 col-sm-3">
+                                                <div class="form-material form-material-primary">
+                                                    <input class="form-control" type="text" id="faq-contact-firstname" name="faq-contact-firstname" placeholder="">
+                                                    <label for="faq-contact-firstname">扫描速率</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-8 col-sm-3">
+                                                <div class="form-material form-material-primary">
+                                                    <input class="form-control" type="text" name="faq-contact-firstname" placeholder="">
+                                                    <label for="faq-contact-firstname">端口扫描:</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-8 col-sm-3">
+                                                <div class="form-material form-material-primary">
+                                                    <input class="form-control" type="text" name="faq-contact-firstname" placeholder="">
+                                                    <label for="faq-contact-firstname">任务超时:</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="col-xs-8 col-sm-11">
+                                                <div class="form-material form-material-primary">
+                                                    <input class="form-control" type="text" name="faq-contact-firstname" placeholder="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36">
+                                                    <label for="faq-contact-firstname">扫描签名</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="col-xs-12">
+                                                <div class="form-material form-material-primary">
+                                                    <textarea class="form-control" id="faq-contact-msg" name="faq-contact-msg" rows="7" placeholder="uin=27295; login_name=scanner; skey=9c3346b0a3c5e8; loidcreated=2015-03-30"></textarea>
+                                                    <label for="faq-contact-msg">网站Cookie</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group remove-margin-b">
+                                <div class="col-xs-12">
+                                    <button class="btn btn-sm btn-primary" type="submit"><i class="fa fa-send push-5-r"></i> 立即添加</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Page Content -->
+</main>
+<!-- END Main Container -->
+
+{% endblock %}

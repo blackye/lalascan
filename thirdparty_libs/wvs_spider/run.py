@@ -29,17 +29,17 @@ from celery import Celery, platforms
 import sys, time, datetime, random, hashlib, urllib, requests
 from lib.config import REDIS_SERVER, REDIS_PWD
 
-def start_wvs_spider_dispatch(target, cookie, Logger):
+def start_wvs_spider_dispatch(target, audit_name, cookie, Logger):
 	app = Celery()
 	app.config_from_object('wvs_celery_config')
 	domain = get_crawl_domain(target)
-	keys = get_save_crawl_folder_name(domain)
-	Logger.log_verbose("Web Spider: Crawl Domain:%s, keys:%s"  % (domain, keys))
+	#keys = get_save_crawl_folder_name(domain)
+	Logger.log_verbose("Web Spider: Crawl Domain:%s, keys:%s"  % (domain, audit_name))
 	Logger.log_verbose("Web Spider: Spider is Running!")
-	app.send_task('wvs_tasks.wvs_spider_dispatch', args=[target, keys, cookie])
+	app.send_task('wvs_tasks.wvs_spider_dispatch', args=[target, audit_name, cookie])
 	platforms.C_FORCE_ROOT = True
 	Logger.log_verbose('Waiting spider return content..........')
-	return wait_parse_result(keys)
+	return wait_parse_result(audit_name)
 
 def test_start_wvs_spider_dispatch(keys):
 	return wait_parse_result(keys)

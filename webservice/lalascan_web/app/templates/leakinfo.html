@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Main Container -->
+<main id="main-container">
+    <!-- Page Header -->
+    <div class="content bg-gray-lighter">
+        <div class="row items-push">
+            <div class="col-sm-7">
+                <h1 class="page-heading">
+                    漏洞类型分布 <small></small>
+                </h1>
+            </div>
+            <div class="col-sm-5 text-right hidden-xs">
+                <ol class="breadcrumb push-10-t">
+                    <li>首页</li>
+                    <li><a class="link-effect" href="">Search Results</a></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <!-- END Page Header -->
+
+    <!-- Partial Table -->
+    <div class="block">
+        <div class="block-header">
+            <h3 class="block-title"></h3>
+            <div class="block-options">
+                <button class="btn btn-sm btn-success" type="submit"><i class="si si-arrow-right"></i> 新增漏洞类型</button>
+            </div>
+        </div>
+
+
+        <div class="block-content">
+            <table class="table table-striped table-vcenter">
+                <thead>
+                    <tr>
+                        <th class="hidden-xs" style="width: 5%;">ID</th>
+                        <th class="hidden-xs" style="width: 10%;">漏洞插件</th>
+                        <th class="text-center" style="width: 10%;">漏洞名</th>
+                        <th class="hidden-xs" style="width: 10px">归属类型</th>
+                        <th class="hidden-xs" style="width: 10px">漏洞描述</th>
+                        <th class="hidden-xs" style="width: 10px">风险等级</th>
+                        <th class="hidden-xs" style="width: 5px;">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for leak in leakinfo %}
+                    <tr>
+                        <td class="font-w600">{{ leak.id }}</td>
+                        <td class="hidden-xs">{{ leak.leak_name }}</td>
+                        <td class="hidden-xs hidden-sm">{{ leak.leak_name_cn }}</td>
+                        <td class="hidden-xs hidden-sm">{{ leak.leak_name_cn }}</td>
+                        <td class="hidden-xs hidden-sm">{{ leak.description | truncate(50, True) }}</td>
+                        <td class="hidden-xs hidden-sm">
+                            {% if leak.risk_level and leak.risk_level == 4 %}
+                                <span class="label label-danger">高危</span>
+                            {% elif leak.risk_level == 3 %}
+                                <span class="label label-warning">中危</span>
+                            {% elif leak.risk_level == 2 %}
+                                <span class="label label-primary">低危</span>
+                            {% elif leak.risk_level == 1 %}
+                                <span class="label label label-success">提示</span>
+                            {% endif %}
+                        </td>
+                        <td class="hidden-xs">
+                            <div class="btn-group">
+                                <button class="btn btn-xs btn-default" type="button" data-toggle="tooltip" title="分类编辑"><i class="fa fa-pencil"></i></button>
+                                <button class="btn btn-xs btn-default" type="button" data-toggle="tooltip" title="删除类型"><i class="fa fa-times"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- END Partial Table -->
+
+</main>
+
+{% endblock %}

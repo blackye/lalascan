@@ -12,7 +12,7 @@ __author__ = 'BlackYe.'
 from lalascan.api.exception import LalascanBaseException, LalascanDataException, LalascanValueError
 from lalascan.data.information.html import HTML
 from lalascan.data.resource.url import URL
-from lalascan.libs.core.globaldata import logger
+from lalascan.libs.core.globaldata import L
 from lalascan.libs.net.scraper import extract_from_html, extract_from_text, extract_forms_from_html
 from lalascan.libs.net.web_utils import parse_url, argument_query, get_request
 from lalascan.utils.text_utils import to_utf8
@@ -77,16 +77,16 @@ def payload_muntants(url_info, payload = {}, bmethod = 'GET', exclude_cgi_suffix
     if bmethod == "GET":
         m_resource_url_payload = URL(url = __.request_cgi, method = bmethod, referer = m_url_info.referer, url_params= param_dict, post_params = m_url_info.post_params, urlencode = payload_encode)
         try:
-            logger.log_verbose('[webvul:%s] [+] %s' % (get_curmodule(), m_resource_url_payload.url))
+            L.logger.log_verbose('[webvul:%s] [+] %s' % (get_curmodule(), m_resource_url_payload.url))
         except LalascanBaseException:
-            logger.log_verbose('[+] %s' %  m_resource_url_payload.url)
+            L.logger.log_verbose('[+] %s' %  m_resource_url_payload.url)
 
     elif bmethod == "POST":
         m_resource_url_payload = URL(url = __.request_cgi, method = bmethod, referer = m_url_info.referer, url_params= m_url_info.url_params, post_params= param_dict, urlencode = payload_encode)
         try:
-            logger.log_verbose('[webvul:%s] [+] %s %s' % (get_curmodule(), m_resource_url_payload.url, param_dict))
+            L.logger.log_verbose('[webvul:%s] [+] %s %s' % (get_curmodule(), m_resource_url_payload.url, param_dict))
         except LalascanBaseException:
-            logger.log_verbose('[+] %s %s' %  (m_resource_url_payload.url, param_dict))
+            L.logger.log_verbose('[+] %s %s' %  (m_resource_url_payload.url, param_dict))
 
     return get_request(url = m_resource_url_payload, allow_redirects=False, use_cache = use_cache, timeout = timeout), m_resource_url_payload
 
@@ -96,7 +96,7 @@ def request_muntants(url, timeout = 30.0, allow_redirects = True, allow_out_of_s
     if not isinstance(url , URL):
         raise TypeError("Expected url object, type:%s" % type(url))
 
-    logger.log_verbose('[requets_url:%s] [+] %s' % (get_curmodule(), url.url))
+    L.logger.log_verbose('[requets_url:%s] [+] %s' % (get_curmodule(), url.url))
     return get_request(url = url, allow_redirects=False, timeout = timeout)
 
 

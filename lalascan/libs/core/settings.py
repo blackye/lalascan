@@ -42,3 +42,5 @@ NGX_HTTP_CODE = {
     'NGX_HTTP_AUTH'      : 401,
     'NGX_HTTP_REDIRECT'  : 301
 }
+
+

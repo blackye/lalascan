@@ -7,7 +7,7 @@ from lalascan.api.exception import LalascanValueError
 
 from lalascan.libs.core.plugin import PluginBase
 from lalascan.libs.core.pluginregister import reg_instance_plugin
-from lalascan.libs.core.globaldata import logger, conf, vulresult
+from lalascan.libs.core.globaldata import L, conf, vulresult
 
 from lalascan.libs.net.web_utils import parse_url, argument_query, get_request
 from lalascan.libs.net.web_mutants import payload_muntants
@@ -156,14 +156,14 @@ class ReflectXSSPlugin(PluginBase):
                             result.append(flag)
 
                     except AssertionError:
-                        logger.log_verbose("targets list length must bu one!")
+                        L.logger.log_verbose("targets list length must bu one!")
                         return False
 
                 if len(result) > 0:
 
                     vul = WebVulnerability(target = payload_resource, vulparam_point = k, method = method, payload = xss_payload, injection_type = "REFLECT_XSS")
                     vulresult.put_nowait(vul)
-                    logger.log_success('[!+>>>] found %s reflect xss vulnerable!' % payload_resource.url)
+                    L.logger.log_success('[!+>>>] found %s reflect xss vulnerable!' % payload_resource.url)
 
                     return True
 

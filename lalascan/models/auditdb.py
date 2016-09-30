@@ -50,3 +50,6 @@ class AuditMysqlDB(BaseDB):
 
     def close(self):
         self.auditdb.close()
+
+    def __call__(self, *args, **kwargs):
+        return self.auditdb

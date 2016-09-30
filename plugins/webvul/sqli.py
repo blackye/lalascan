@@ -10,7 +10,7 @@ from lalascan.api.exception import LalascanNetworkException, LalascanAttributeEr
 from lalascan.api.exception import LalascanValueError
 from lalascan.libs.core.plugin import PluginBase
 from lalascan.libs.core.pluginregister import reg_instance_plugin
-from lalascan.libs.core.globaldata import logger, vulresult
+from lalascan.libs.core.globaldata import L, vulresult
 from lalascan.libs.net.web_utils import get_request
 from lalascan.libs.net.web_mutants import payload_muntants, request_muntants
 from lalascan.utils.mymath import LalaMath
@@ -83,7 +83,7 @@ class SqliPlugin(PluginBase):
         # If file is a javascript, css or image, do not run
 
         if info.parsed_url.extension[1:] in ('css', 'js', 'jpeg', 'jpg', 'png', 'gif', 'svg', 'txt') or ( not info.has_url_params and not info.has_post_params):
-            logger.log_verbose("Skipping URL: %s" % m_url)
+            L.logger.log_verbose("Skipping URL: %s" % m_url)
             return
 
         m_return = []
@@ -249,7 +249,7 @@ class SqliPlugin(PluginBase):
                 if self._err_msg_sql_detect(p, test_case_dict['target']):
                     #print '[+] found sql inject in url:{0}, payload:{1}'.format(req_uri, payload_param_dict)
                     vulresult.put_nowait(WebVulnerability(target = payload_resource, vulparam_point = param_dict['param_key'] , method = method, payload = test_case_dict['input'], injection_type = "SQLI"))
-                    logger.log_success('[!+>>>] found %s err_msg sql inject vulnerable!' % payload_resource.url)
+                    L.logger.log_success('[!+>>>] found %s err_msg sql inject vulnerable!' % payload_resource.url)
                     return True
 
         elif sql_detect_type == "ORDER_BY_DETECT":
@@ -362,7 +362,7 @@ class SqliPlugin(PluginBase):
 
             if table_column != 0:
 
-                logger.log_verbose("[+!>>>] %s maybe has order by inject!" % url.url)
+                L.logger.log_verbose("[+!>>>] %s maybe has order by inject!" % url.url)
                 for inject_index in range(table_column):
                     union_list = [x+1 for x in range(table_column)]
                     union_list[inject_index] = ORDER_BY_SIGN
@@ -373,7 +373,7 @@ class SqliPlugin(PluginBase):
 
                         if union_payload_rsp is not None and ORDER_BY_MD5_VAL in union_payload_rsp.data:
                             vulresult.put_nowait(WebVulnerability(target = payload_resource, vulparam_point = k, method = method, payload = union_payload, injection_type = "SQLI"))
-                            logger.log_success('[!+>>>] found %s order_by sql inject vulnerable!' % payload_resource.url)
+                            L.logger.log_success('[!+>>>] found %s order_by sql inject vulnerable!' % payload_resource.url)
                             return True
 
                     except LalascanAttributeError:
@@ -445,7 +445,7 @@ class SqliPlugin(PluginBase):
 
                     if union_payload_rsp is not None and ORDER_BY_MD5_VAL in union_payload_rsp.data:
                         vulresult.put_nowait(WebVulnerability(target = payload_resource, vulparam_point = k, method = method, payload = union_payload, injection_type = "SQLI"))
-                        logger.log_success('[!+>>>] found %s union_by sql inject vulnerable!' % payload_resource.url)
+                        L.logger.log_success('[!+>>>] found %s union_by sql inject vulnerable!' % payload_resource.url)
                         return True
 
                 except LalascanAttributeError:
@@ -458,7 +458,7 @@ class SqliPlugin(PluginBase):
 
                     if union_payload_rsp is not None and ORDER_BY_MD5_VAL in union_payload_rsp.data:
                         vulresult.put_nowait(WebVulnerability(target = payload_resource, vulparam_point = k, method = method, payload = union_payload, injection_type = "SQLI"))
-                        logger.log_success('[!+>>>] found %s union_by sql inject vulnerable!' % payload_resource.url)
+                        L.logger.log_success('[!+>>>] found %s union_by sql inject vulnerable!' % payload_resource.url)
                         return True
 
                 except LalascanAttributeError:
@@ -551,7 +551,7 @@ class SqliPlugin(PluginBase):
                                  compare_diff):
 
                 vulresult.put_nowait(WebVulnerability(target = payload_resource, vulparam_point = k, method = method, payload = true_case, injection_type = "SQLI"))
-                logger.log_success('[!+>>>] found %s boolean sql inject vulnerable!' % payload_resource.url)
+                L.logger.log_success('[!+>>>] found %s boolean sql inject vulnerable!' % payload_resource.url)
                 return True
 
         return False
@@ -685,7 +685,7 @@ class SqliPlugin(PluginBase):
 
                 if bvul:
                     vulresult.put_nowait(WebVulnerability(target = payload_resource, vulparam_point = k, method = method, payload = time_payload, injection_type = "SQLI"))
-                    logger.log_success('[!+>>>] found %s time-based sql inject vulnerable!' % payload_resource.url)
+                    L.logger.log_success('[!+>>>] found %s time-based sql inject vulnerable!' % payload_resource.url)
                     return True
 
         return False

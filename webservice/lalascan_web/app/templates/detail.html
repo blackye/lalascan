@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Main Container -->
+<main id="main-container">
+    <!-- Page Header -->
+    <div class="content bg-gray-lighter">
+        <div class="row items-push">
+            <div class="col-sm-8">
+                <h1 class="page-heading">
+                    Web漏洞扫描报告 <small>您的网站存在0个漏洞.安全风险等级：</small>
+                </h1>
+            </div>
+            <div class="col-sm-4 text-right hidden-xs">
+                <ol class="breadcrumb push-10-t">
+                    <li>首页</li>
+                    <li><a class="link-effect" href="">Animations</a></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <!-- END Page Header -->
+
+    <!-- Page Content -->
+    <div class="content content-narrow">
+        <!-- Headings -->
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Headings Light -->
+                <div class="block block-bordered">
+                    <div class="block-header bg-gray-lighter">
+                        <h3 class="block-title">网站基础信息</h3>
+                    </div>
+                    <div class="block-content">
+                        <h6 class="font-w300 push">扫描URL：</h6>
+                        <h6 class="font-w300 push">网站标题：</h6>
+                        <h6 class="font-w300 push">服务器IP：</h6>
+                        <h6 class="font-w300 push">任务名：</h6>
+                        <h6 class="font-w300 push">扫描时间：</h6>
+                        <h6 class="font-w300 push">扫描进程数：</h6>
+                        <h6 class="font-w300 push">安全评级：</h6>
+                    </div>
+                </div>
+                <!-- END Headings Light -->
+            </div>
+            <div class="col-md-6">
+                <!-- Headings Bold -->
+                <div class="block">
+                     <div class="block-header bg-gray-lighter">
+                        <h3 class="block-title">漏洞统计分布</h3>
+                    </div>
+                    <div class="block-content">
+                        <div class="row items-push-2x text-center">
+                            <div class="col-xs-6 col-sm-4">
+                                <!-- Sparkline Pie 1 Container -->
+                                <span class="js-slc-pie1">4,3,2,4</span>
+                                <div class="push-10-t"><i class="fa fa-ticket text-muted"></i> Tickets</div>
+                            </div>
+                            <div class="col-xs-6 col-sm-4">
+                                <!-- Sparkline Pie 2 Container -->
+                                <span class="js-slc-pie2">980,1210,1350,900</span>
+                                <div class="push-10-t"><i class="fa fa-line-chart text-muted"></i> Earnings</div>
+                            </div>
+                            <div class="col-xs-12 col-sm-4">
+                                <!-- Sparkline Pie 3 Container -->
+                                <span class="js-slc-pie3">8,11,9,8</span>
+                                <div class="push-10-t"><i class="fa fa-suitcase text-muted"></i> Sales</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- END Headings Bold -->
+            </div>
+        </div>
+        <!-- END Headings -->
+
+        <!-- Bouncing Entrances -->
+        <h2 class="content-heading">Bouncing Entrances</h2>
+        <div class="block">
+            <div class="block-content block-content-full">
+                <div class="row js-animation-section">
+                    <div class="col-md-6">
+                        <h5 class="font-w400 push">Active CSS classes: <code>animated <span class="js-animation-preview"></span></code></h5>
+                        <div class="row items-push">
+                            <div class="col-sm-6">
+                                <button class="btn btn-block btn-default" data-animation-class="bounceIn">bounceIn</button>
+                            </div>
+                            <div class="col-sm-6">
+                                <button class="btn btn-block btn-default" data-animation-class="bounceInDown">bounceInDown</button>
+                            </div>
+                            <div class="col-sm-6">
+                                <button class="btn btn-block btn-default" data-animation-class="bounceInLeft">bounceInLeft</button>
+                            </div>
+                            <div class="col-sm-6">
+                                <button class="btn btn-block btn-default" data-animation-class="bounceInRight">bounceInRight</button>
+                            </div>
+                            <div class="col-sm-6">
+                                <button class="btn btn-block btn-default" data-animation-class="bounceInUp">bounceInUp</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-md-offset-1">
+                        <div class="js-animation-object">
+                            <img class="center-block img-responsive" src="/static/img/various/little-monster.png" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END Bouncing Entrances -->
+
+
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Headings Light -->
+                <div class="block block-bordered">
+                    <div class="block-header bg-gray-lighter">
+                        <h3 class="block-title">网站爬虫目录</h3>
+                    </div>
+                    <div class="block-content">
+                    </div>
+                </div>
+                <!-- END Headings Light -->
+            </div>
+        </div>
+        <!-- END Headings -->
+
+    </div>
+    <!-- END Page Content -->
+</main>
+<!-- END Main Container -->
+
+{% endblock %}

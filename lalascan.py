@@ -5,8 +5,8 @@ __author__ = 'BlackYe.'
 
 from thirdparty_libs.argparse import argparse
 from lalascan.libs.core.settings import USAGE, VERSION, UNICODE_ENCODING
-from lalascan.libs.core.common import banner, console_output
-from lalascan.libs.core.globaldata import cmdLineOptions, conf, logger
+from lalascan.libs.core.common import banner, console_output, generate_audit_name
+from lalascan.libs.core.globaldata import cmdLineOptions, conf, L
 from lalascan.data.datatype import AttribDict
 from lalascan.data.enum import CUSTOM_LOGGING
 from lalascan.api.exception import LalascanDataException
@@ -72,6 +72,8 @@ def parse_cmd_options():
     request.add_argument("--update-leakinfo", dest="leakinfo", action="store_true", default=False,
                          help="Update or Generate webvulleak info.")
 
+    request.add_argument("--update-policy", dest="policy", action="store_true", default = False,
+                         help="Update or Generate vulnerability policy.")
 
     args = parser.parse_args()
 
@@ -80,18 +82,25 @@ def parse_cmd_options():
 def initOptions(inputOptions = AttribDict()):
 
     try:
-
         #========================
         # api interface must be first
         if inputOptions['leakinfo']:
-            from lalascan.api.leak_generate import generate_leak_info
+            from lalascan.api.option import generate_leak_info
             generate_leak_info()
+
+        if inputOptions['policy']:
+            from lalascan.api.option import _sava_policy2db
+            _sava_policy2db()
 
 
         conf.url = inputOptions.url
         if conf.url is None:
-            logger.log_error("no target resource!")
+            #L.logger.log_error("no target resource!")
+            console_output(data = "[-] no target resource, lalascan over!\n")
             sys.exit()
+
+        audit_name = generate_audit_name(conf.url)
+        L.set_logfilepath(audit_name)  #设置扫描日志存放文件
 
         if inputOptions['process_num'] is not None:
             conf.threads = inputOptions.process_num
@@ -111,13 +120,12 @@ def initOptions(inputOptions = AttribDict()):
         conf.bspider = inputOptions['bspider']
         conf.targets = []
     except LalascanDataException:
-        logger.log_error("init args option error!")
+        L.logger.log_error("init args option error!")
         sys.exit()
 
 def main():
 
     banner()
-
     option_args = parse_cmd_options()
     cmdLineOptions.update(option_args)
     initOptions(cmdLineOptions)

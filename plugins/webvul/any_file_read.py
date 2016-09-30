@@ -7,7 +7,7 @@ from lalascan.api.exception import LalascanValueError
 
 from lalascan.libs.core.plugin import PluginBase
 from lalascan.libs.core.pluginregister import reg_instance_plugin
-from lalascan.libs.core.globaldata import logger, vulresult
+from lalascan.libs.core.globaldata import L, vulresult
 from lalascan.data.vuln.vulnerability import WebVulnerability
 
 from lalascan.libs.net.web_utils import parse_url, argument_query, get_request
@@ -86,7 +86,7 @@ class AnyFileReadPlugin(PluginBase):
                     if __ is not None:
                         vul = WebVulnerability(target = payload_resource, vulparam_point = param['param_key'], method = method, payload = any_file_read_case['input'], injection_type = "ANY_FILE_READ")
                         vulresult.put_nowait(vul)
-                        logger.log_success('[!+>>>] found %s reflect xss vulnerable!' % payload_resource.url)
+                        L.logger.log_success('[!+>>>] found %s reflect xss vulnerable!' % payload_resource.url)
 
                         return m_return
 
