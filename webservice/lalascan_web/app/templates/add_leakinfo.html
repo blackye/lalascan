@@ -1,10 +1,116 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block content %}
 
-</body>
-</html>
+<script>
+
+    function test(){
+        return true;
+    }
+</script>
+
+<!-- Main Container -->
+<main id="main-container">
+    <!-- Page Header -->
+    <div class="content bg-gray-lighter">
+        <div class="row items-push">
+            <div class="col-sm-8">
+                <h1 class="page-heading">
+                    添加新漏洞插件类型
+                </h1>
+            </div>
+            <div class="col-sm-4 text-right hidden-xs">
+                <ol class="breadcrumb push-10-t">
+                    <li>首页</li>
+                    <li><a class="link-effect" href="">Animations</a></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <!-- END Page Header -->
+
+    <!-- Page Content -->
+    <div class="content content-narrow">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#faq4" href="#faq4_q1"><i class="si si-list"></i> 填写漏洞大类规则</a>
+                    </h3>
+                </div>
+                <div id="faq4_q1" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                        <form class="form-horizontal push-10-t" action="/webscan/leak_add" method="post" onsubmit="return test();">
+                            <h2 class="content-heading">基本规则配置</h2>
+                            <div class="block">
+                                <div class="block-content block-content-full">
+                                    <div class="row js-animation-section">
+
+                                        <div class="form-group">
+                                            <div class="col-xs-6 col-sm-4">
+                                                <div class="form-material form-material-primary">
+                                                    <input class="form-control" type="text" id="faq-contact-firstname" name="leak_name_cn" placeholder="eg SQL注入">
+                                                    <label for="faq-contact-firstname">漏洞分类名称(中文)</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-6 col-sm-4">
+                                                <div class="form-material form-material-primary">
+                                                    <input class="form-control" type="text" id="faq-contact-lastname" name="leak_name" placeholder="eg sqli">
+                                                    <label for="faq-contact-lastname">漏洞插件类名</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="col-sm-4">
+                                                <div class="form-material form-material-primary">
+                                                    <select class="form-control" id="faq-contact-subject" name="spt" size="1">
+                                                        {%for plugin_info in plugin_type %}
+                                                            <option value="{{plugin_info.id}}">{{ plugin_info.name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <label for="faq-contact-subject">插件归属类型</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="col-xs-4">
+                                                <label for="mega-skills">风险等级</label>
+                                                <select class="form-control" id="mega-skills" name="risk_level" size="4" multiple>
+                                                    <option value="4">高危</option>
+                                                    <option value="3">中危</option>
+                                                    <option value="2">低危</option>
+                                                    <option value="1">提示</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="col-xs-12">
+                                                <div class="form-material form-material-primary">
+                                                    <textarea class="form-control" id="faq-contact-msg" name="description" rows="7" placeholder="恶意用户可以利用该漏洞执行任意SQL语句,可以造成如下危害：未经过授权操作数据库中的数据,恶意..."></textarea>
+                                                    <label for="faq-contact-msg">漏洞描述</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group remove-margin-b">
+                                <div class="col-xs-12">
+                                    <button class="btn btn-sm btn-primary" type="submit"><i class="si si-action-redo push-5-r"></i> 立即添加</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Page Content -->
+</main>
+<!-- END Main Container -->
+
+{% endblock %}

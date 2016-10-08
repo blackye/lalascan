@@ -16,10 +16,11 @@ class SLeakInfo(db.Model):
     leak_name_cn = db.Column(db.String(100), nullable = False)
     description = db.Column(db.Text())
     risk_level = db.Column(db.Integer)
+    fix_content = db.Column(db.Text())
 
-    def to_dict(self):
+    def to_dict(self, **kwargs):
 
-        return dict(
+        leakinfo_dict = dict(
             id = self.id,
             spt_id = self.spt_id,
             leak_name = self.leak_name,
@@ -27,6 +28,8 @@ class SLeakInfo(db.Model):
             description = self.description,
             risk_level = self.risk_level,
         )
+
+        return dict(leakinfo_dict, **kwargs)
 
 class SPluginType(db.Model):
 
@@ -36,3 +39,6 @@ class SPluginType(db.Model):
     name = db.Column(db.String(10), nullable = False)
     description = db.Column(db.Text())
 
+    def get_plugin_name(self):
+        return dict( id = self.id,
+                     name = self.name )

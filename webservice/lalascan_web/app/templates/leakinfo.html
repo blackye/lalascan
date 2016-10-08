@@ -1,6 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
 
+<script>
+    function del_leakinfo(leak_id){
+        $.getJSON('/webscan/del_leakinfo', {
+            leak_id : leak_id
+        }, function(data){
+            if (data.status == 100){
+                top.location.reload();
+            }
+        })
+    }
+
+</script>
+
 <!-- Main Container -->
 <main id="main-container">
     <!-- Page Header -->
@@ -26,7 +39,7 @@
         <div class="block-header">
             <h3 class="block-title"></h3>
             <div class="block-options">
-                <button class="btn btn-sm btn-success" type="submit"><i class="si si-arrow-right"></i> 新增漏洞类型</button>
+                <button class="btn btn-sm btn-success" type="submit" onclick="location='/webscan/add_leakinfo'"><i class="si si-arrow-right"></i> 新增漏洞类型</button>
             </div>
         </div>
 
@@ -50,7 +63,7 @@
                         <td class="font-w600">{{ leak.id }}</td>
                         <td class="hidden-xs">{{ leak.leak_name }}</td>
                         <td class="hidden-xs hidden-sm">{{ leak.leak_name_cn }}</td>
-                        <td class="hidden-xs hidden-sm">{{ leak.leak_name_cn }}</td>
+                        <td class="hidden-xs hidden-sm">{{ leak.plugin_type }}</td>
                         <td class="hidden-xs hidden-sm">{{ leak.description | truncate(50, True) }}</td>
                         <td class="hidden-xs hidden-sm">
                             {% if leak.risk_level and leak.risk_level == 4 %}
@@ -66,9 +79,35 @@
                         <td class="hidden-xs">
                             <div class="btn-group">
                                 <button class="btn btn-xs btn-default" type="button" data-toggle="tooltip" title="分类编辑"><i class="fa fa-pencil"></i></button>
-                                <button class="btn btn-xs btn-default" type="button" data-toggle="tooltip" title="删除类型"><i class="fa fa-times"></i></button>
+                                <button class="btn btn-xs btn-default" type="button" data-toggle="modal" data-target="#modal-fadein_{{leak.id}}" data-toggle="tooltip" title="删除类型"><i class="fa fa-times"></i></button>
                             </div>
                         </td>
+
+                        <!-- Fade In Modal -->
+                        <div class="modal fade" id="modal-fadein_{{leak.id}}" tabindex="-1" role="dialog" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="block block-themed block-transparent remove-margin-b">
+                                        <div class="block-header bg-primary-dark">
+                                            <ul class="block-options">
+                                                <li>
+                                                    <button data-dismiss="modal" type="button"><i class="si si-close"></i></button>
+                                                </li>
+                                            </ul>
+                                            <h3 class="block-title">删除 &amp; 漏洞类型</h3>
+                                        </div>
+                                        <div class="block-content">
+                                            <label for="example-text-input-error">你确定要删除类型为"{{leak.leak_name_cn}}"的漏洞分类么？</label>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-sm btn-default" type="button" data-dismiss="modal">关闭</button>
+                                        <button class="btn btn-sm btn-primary" type="button" data-dismiss="modal" onclick="del_leakinfo({{leak.id}})"><i class="fa fa-check"></i> 确定</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- END Fade In Modal -->
                     </tr>
                     {% endfor %}
                 </tbody>

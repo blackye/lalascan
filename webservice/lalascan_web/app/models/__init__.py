@@ -6,4 +6,4 @@ __author__ = 'BlackYe.'
 
 from flask.ext.sqlalchemy import SQLAlchemy
 
-db = SQLAlchemy()
+db = SQLAlchemy(use_native_unicode = 'utf8')

@@ -36,12 +36,16 @@
         <!-- Web fonts -->
         <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400italic,600,700%7COpen+Sans:300,400,400italic,600,700">
 
+        <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
         <!-- OneUI CSS framework -->
         <link rel="stylesheet" id="css-main" href="/static/css/oneui.css">
 
         <!-- You can include a specific file from css/themes/ folder to alter the default color theme of the template. eg: -->
         <!-- <link rel="stylesheet" id="css-theme" href="/static/css/themes/flat.min.css"> -->
         <!-- END Stylesheets -->
+        <script type=text/javascript>
+            $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+        </script>
     </head>
     <body>
         <!-- Page Container -->
