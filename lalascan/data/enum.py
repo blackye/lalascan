@@ -8,3 +8,10 @@ class CUSTOM_LOGGING:
     SUCCESS = 8
     ERROR = 7
     WARNING = 6
+
+
+class RISK_LEVEL:
+    HIGH   = u'High'
+    MIDDLE = u'Middle'
+    LOW    = u'Low'
+    INFO   = u'Info'

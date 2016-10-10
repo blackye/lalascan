@@ -761,6 +761,7 @@ class HTTP_Response (Capture):
         """
 
         # Initialize everything.
+        self.__request      = request
         self.__raw_response = None
         self.__raw_headers  = None
         self.__status       = None
@@ -1089,3 +1090,9 @@ class HTTP_Response (Capture):
     #--------------------------------------------------------------------------
     def __reconstruct_raw_headers(self):
         self.__raw_headers = str(self.__headers)
+
+
+    #add by blackye
+    @property
+    def raw_request(self):
+        return self.__request

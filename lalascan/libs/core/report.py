@@ -3,7 +3,7 @@
 
 __author__ = 'BlackYe.'
 
-from ...libs.core.globaldata import conf, vulresult
+from ...libs.core.globaldata import conf, vulresult, source_result
 from ...models.auditdb import AuditMysqlDB
 from ...data import Data
 from ...data.resource.domain import Domain
@@ -12,6 +12,7 @@ from ...data.resource.url import BaseURL, URL
 from ...data.vuln.vulnerability import WebVulnerability
 
 from ...utils.console_utils import get_terminal_size, colorize_substring, colorize
+from ...utils.mytime import MyTime
 
 from thirdparty_libs.texttable import Texttable
 from thirdparty_libs.prettytable.prettytable import PrettyTable
@@ -41,7 +42,7 @@ class TextReport():
 
         # Summary
         #start_time, stop_time, run_time = parse_audit_times( *get_audit_times() )
-        start_time, stop_time, run_time = 0, 0 , 100
+        start_time, stop_time, run_time = MyTime.parse_audit_times(source_result.start_time, source_result.end_time)
 
         #host_count  = Database.count(Data.TYPE_RESOURCE, Domain.data_subtype)
         #host_count += Database.count(Data.TYPE_RESOURCE, IP.data_subtype)
@@ -153,7 +154,7 @@ class TextReport():
         print >>self.__fd, "-# %s #- " % self.__colorize("Vulnerabilities", "yellow")
         print >>self.__fd, ""
         #count = Database.count(Data.TYPE_VULNERABILITY)
-        count = 5
+        count = vulresult.qsize()
         if count:
             if self.__show_data:
                 print >>self.__fd, self.__colorize("%d vulnerabilities found!" % count, "red")
@@ -161,12 +162,14 @@ class TextReport():
 
             if vulresult.qsize() > 0:
                 table = Texttable()
-                table.add_row(["Vul Type", "Vul Url", "Vul Parameter", "Payload", "Method", "Risk"])
+                table.add_row(["Vul Type", "Vul Url", "Vul Parameter", "Payload", "Method", "Risk Level"])
 
                 while vulresult.qsize() > 0:
                     _ = vulresult.get()
                     table.add_row(
-                         [_.injection_type, _.url, _.vulparam_point, _.payload, _.vul_method, "HIGH"])
+                         [_.injection_type, _.url, _.vulparam_point, _.payload, _.vul_method, _.vul_risk_desc])
+
+                    #audit_db insert scan result into db
 
                 self.__fix_vul_table_width(table)
                 text = table.draw()
@@ -233,3 +236,4 @@ class TextReport():
                 method_width    = 10
                 risk_width      = 10
                 table.set_cols_width((w, vulurl_width, parameter_width, payload_width, method_width, risk_width))
+

@@ -17,13 +17,21 @@ class PolicyService(object):
         return [policy.to_dict() for policy in all_policy]
 
     @staticmethod
-    def get_policy_by_leakinfo():
-        return db.session.query(SLeakInfo.leak_name_cn, SLeakPolicy).join(SLeakPolicy, SLeakInfo.id == SLeakPolicy.spt_id).order_by(SLeakPolicy.id).all()
+    def get_policy_cnt():
+        return SLeakPolicy.query.count()
 
     @staticmethod
-    def get_leakinfo():
-        all_leakinfo = db.session.query(SPluginType.name, SLeakInfo).join(SLeakInfo, SLeakInfo.spt_id == SPluginType.id).order_by(SLeakInfo.id.desc()).all()
+    def get_policy_by_leakinfo(offset, per_page):
+        return db.session.query(SLeakInfo.leak_name_cn, SLeakPolicy).join(SLeakPolicy, SLeakInfo.id == SLeakPolicy.spt_id).order_by(SLeakPolicy.id.desc()).offset(offset).limit(per_page).all()
+
+    @staticmethod
+    def get_leakinfo(offset, per_page):
+        all_leakinfo = db.session.query(SPluginType.name, SLeakInfo).join(SLeakInfo, SLeakInfo.spt_id == SPluginType.id).order_by(SLeakInfo.id.desc()).offset(offset).limit(per_page).all()
         return [leakinfo[1].to_dict(plugin_type = leakinfo[0]) for leakinfo in all_leakinfo]
+
+    @staticmethod
+    def get_leakinfo_cnt():
+        return SLeakInfo.query.count()
 
     @staticmethod
     def get_plugin_type():

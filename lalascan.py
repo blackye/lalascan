@@ -99,8 +99,8 @@ def initOptions(inputOptions = AttribDict()):
             console_output(data = "[-] no target resource, lalascan over!\n")
             sys.exit()
 
-        audit_name = generate_audit_name(conf.url)
-        L.set_logfilepath(audit_name)  #设置扫描日志存放文件
+        conf.audit_name = generate_audit_name(conf.url)
+        L.set_logfilepath(conf.audit_name)  #设置扫描日志存放文件
 
         if inputOptions['process_num'] is not None:
             conf.threads = inputOptions.process_num

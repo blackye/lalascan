@@ -84,7 +84,7 @@ class AnyFileReadPlugin(PluginBase):
                 if p is not None:
                     __ = re.search(any_file_read_case['target'], p.data)
                     if __ is not None:
-                        vul = WebVulnerability(target = payload_resource, vulparam_point = param['param_key'], method = method, payload = any_file_read_case['input'], injection_type = "ANY_FILE_READ")
+                        vul = WebVulnerability(target = payload_resource, vulparam_point = param['param_key'], method = method, payload = any_file_read_case['input'], injection_type = "any_file_read", vul_response= p)
                         vulresult.put_nowait(vul)
                         L.logger.log_success('[!+>>>] found %s reflect xss vulnerable!' % payload_resource.url)
 

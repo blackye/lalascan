@@ -12,3 +12,5 @@ pyquery
 PyYAML
 re2
 celery
+pymysql
+sqlalchemy

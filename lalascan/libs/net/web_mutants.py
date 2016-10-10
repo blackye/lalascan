@@ -46,7 +46,7 @@ def payload_muntants(url_info, payload = {}, bmethod = 'GET', exclude_cgi_suffix
         raise TypeError("Excepted payload object, type:%s" % type(payload))
 
     if url_info.parsed_url.extension[1:] in exclude_cgi_suffix:
-        logger.log_verbose("Skipping URL: %s" % url_info.url)
+        L.logger.log_verbose("Skipping URL: %s" % url_info.url)
 
     m_url_info = copy(url_info)
     if  bmethod == "GET":

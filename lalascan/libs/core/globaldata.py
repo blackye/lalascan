@@ -9,11 +9,14 @@ global var data
 
 from lalascan.libs.core.logger import _ScanLog
 from lalascan.data.datatype import AttribDict
+from lalascan.models import _DBConfig
 from multiprocessing import Queue
 
 # object to share within function and classes command
 # line options and settings
 conf = AttribDict()
+
+source_result = AttribDict()
 conf.audit_scope = AttribDict()
 
 # logger
@@ -23,6 +26,8 @@ class L(object):
     @classmethod
     def set_logfilepath(cls, audit_name):
         L.logger = _ScanLog(audit_name)
+
+db_audit = _DBConfig()
 
 #global multiprocessing result var
 vulresult = Queue()
