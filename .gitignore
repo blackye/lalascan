@@ -64,3 +64,6 @@ coverage.xml
 
 #policy
 scanpolicy/
+
+#plugins
+plugins/

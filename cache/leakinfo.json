@@ -4,6 +4,7 @@
         "leak_name": "sqli",
         "fix_content": "",
         "id": 1,
+        "spt_id": 1,
         "leak_name_cn": "SQL\u6ce8\u5165"
       },
   "any_file_read":
@@ -12,6 +13,7 @@
         "leak_name": "any_file_read",
         "fix_content": "",
         "id": 4,
+        "spt_id": 1,
         "leak_name_cn": "\u4efb\u610f\u6587\u4ef6\u8bfb\u53d6"
       },
   "reflect_xss":
@@ -20,6 +22,7 @@
         "leak_name": "reflect_xss",
         "fix_content": "",
         "id": 2,
+        "spt_id" : 1,
         "leak_name_cn": "\u53cd\u5c04-XSS"
       },
   "dom_xss":
@@ -28,6 +31,7 @@
         "leak_name": "dom_xss",
         "fix_content": "",
         "id": 3,
+        "spt_id" : 1,
         "leak_name_cn": "DOM-XSS"
       },
   "cmd_inject":
@@ -36,5 +40,6 @@
         "leak_name": "cmd_inject",
         "fix_content": "",
         "id": 5,
+        "spt_id" : 1,
         "leak_name_cn": "\u547d\u4ee4\u6ce8\u5165"}
 }

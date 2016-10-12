@@ -47,7 +47,14 @@ def run():
     report.generate_report()
 
 def get_multiple_target():
-    #infocollect
+
+    #TODO infocollect
+
+    #add scan task into db
+    scan_task_model = ScanTask(audit_name = conf.audit_name, scan_url = conf.url, starttime = MyTime.get_current_datetime(), finishtime = MyTime.get_current_datetime())
+    db_audit.session.add(scan_task_model)
+    db_audit.session.commit()
+    _set_task_id(source_result, scan_task_model.id)
 
     if conf.bspider:
         spider_task(conf.audit_name)
@@ -76,7 +83,6 @@ def http_req_initoption():
     _set_http_useragnet()
     _set_http_cookie()
 
-
 def _set_http_useragnet():
     pass
 
@@ -91,3 +97,9 @@ def _set_http_proxy():
 
 def _set_http_timeout():
     pass
+
+
+def _set_task_id(source_result, task_id):
+
+    source_result.task_id = task_id
+    return source_result

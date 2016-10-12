@@ -33,108 +33,41 @@
                 <thead>
                     <tr>
                         <th style="width: 35%;"><i class="fa fa-suitcase text-gray"></i> 扫描URL</th>
-                        <th class="text-center hidden-xs" style="width: 15%;"><i class="fa fa-ticket text-gray"></i> 检测结果</th>
+                        <th class="text-center hidden-xs" style="width: 45%;"><i class="fa fa-ticket text-gray"></i> 检测结果</th>
                         <th class="text-center hidden-xs hidden-sm" style="width: 8%;"><i class="fa fa-bar-chart text-gray"></i> 扫描状态</th>
                         <th class="text-right" style="width: 15%; min-width: 110px;"><i class="fa fa-trophy text-gray"></i> 更多操作</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {%for task in scanner %}
                     <tr>
                         <td>
                             <h3 class="h5 font-w600 push-10">
-                                <a class="link-effect" href="javascript:void(0)">Web Application Framework</a>
+                                <a class="link-effect" href="javascript:void(0)">{{ task.scan_url }}</a>
                             </h3>
                             <div class="push-10">
-                                <span class="label label-success"><i class="fa fa-check"></i> Completed</span>
+                                <span class="badge badge-warning"><i class="fa fa-cog"></i> 任务名:{{ task.audit_name }}</span>
                             </div>
                             <div class="font-s13 text-muted hidden-xs">
-                                <p>Dolor posuere proin blandit accumsan senectus netus nullam curae, ornare laoreet adipiscing luctus mauris adipiscing pretium eget fermentum, tristique lobortis est ut metus lobortis tortor tincidunt himenaeos habitant quis dictumst proin odio sagittis purus mi, nec taciti vestibulum quis in sit varius lorem sit metus mi.</p>
+                                <p>起始时间: {{ task.starttime }} | 结束时间: {{ task.finishtime }}</p>
                             </div>
                         </td>
-                        <td class="h3 text-center hidden-xs">15</td>
-                        <td class="h3 text-center hidden-xs hidden-sm">520</td>
+                        <td class="h4 text-center hidden-xs">
+                            <div class="block-content">
+                                <span class="badge badge-danger">{{ task.high_risk_cnt }}高危</span> |
+                                <span class="badge badge-warning">{{ task.middle_risk_cnt }}中危</span> |
+                                <span class="badge badge-info">{{ task.low_risk_cnt }}低危</span> |
+                                <span class="badge badge-success">{{ task.info_risk_cnt }}提示</span>
+                            </div>
+                        </td>
+                        <td class="h5 text-center hidden-xs hidden-sm">
+                            <div class="push-5">
+                                <span class="label label-success"><i class="fa fa-check"></i> Completed</span>
+                            </div>
+                        </td>
                         <td class="h6 text-primary text-right">漏洞详情/重新扫描</td>
                     </tr>
-                    <tr>
-                        <td>
-                            <h3 class="h5 font-w600 push-10">
-                                <a class="link-effect" href="javascript:void(0)">Wordpress Theme</a>
-                            </h3>
-                            <div class="push-10">
-                                <span class="label label-warning"><i class="fa fa-refresh fa-spin"></i> In Progress</span>
-                            </div>
-                            <div class="font-s13 text-muted hidden-xs">
-                                <p>Dolor posuere proin blandit accumsan senectus netus nullam curae, ornare laoreet adipiscing luctus mauris adipiscing pretium eget fermentum, tristique lobortis est ut metus lobortis tortor tincidunt himenaeos habitant quis dictumst proin odio sagittis purus mi, nec taciti vestibulum quis in sit varius lorem sit metus mi.</p>
-                            </div>
-                        </td>
-                        <td class="h3 text-center hidden-xs">-</td>
-                        <td class="h3 text-center hidden-xs hidden-sm">-</td>
-                        <td class="h3 text-primary text-right">-</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <h3 class="h5 font-w600 push-10">
-                                <a class="link-effect" href="javascript:void(0)">Mobile Application</a>
-                            </h3>
-                            <div class="push-10">
-                                <span class="label label-success"><i class="fa fa-check"></i> Completed</span>
-                            </div>
-                            <div class="font-s13 text-muted hidden-xs">
-                                <p>Dolor posuere proin blandit accumsan senectus netus nullam curae, ornare laoreet adipiscing luctus mauris adipiscing pretium eget fermentum, tristique lobortis est ut metus lobortis tortor tincidunt himenaeos habitant quis dictumst proin odio sagittis purus mi, nec taciti vestibulum quis in sit varius lorem sit metus mi.</p>
-                            </div>
-                        </td>
-                        <td class="h3 text-center hidden-xs">25</td>
-                        <td class="h3 text-center hidden-xs hidden-sm">980</td>
-                        <td class="h3 text-primary text-right">$ 16,698</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <h3 class="h5 font-w600 push-10">
-                                <a class="link-effect" href="javascript:void(0)">UI Kit</a>
-                            </h3>
-                            <div class="push-10">
-                                <span class="label label-danger"><i class="fa fa-times"></i> Cancelled</span>
-                            </div>
-                            <div class="font-s13 text-muted hidden-xs">
-                                <p>Dolor posuere proin blandit accumsan senectus netus nullam curae, ornare laoreet adipiscing luctus mauris adipiscing pretium eget fermentum, tristique lobortis est ut metus lobortis tortor tincidunt himenaeos habitant quis dictumst proin odio sagittis purus mi, nec taciti vestibulum quis in sit varius lorem sit metus mi.</p>
-                            </div>
-                        </td>
-                        <td class="h3 text-center hidden-xs">-</td>
-                        <td class="h3 text-center hidden-xs hidden-sm">-</td>
-                        <td class="h3 text-primary text-right">-</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <h3 class="h5 font-w600 push-10">
-                                <a class="link-effect" href="javascript:void(0)">Admin Template</a>
-                            </h3>
-                            <div class="push-10">
-                                <span class="label label-success"><i class="fa fa-check"></i> Completed</span>
-                            </div>
-                            <div class="font-s13 text-muted hidden-xs">
-                                <p>Dolor posuere proin blandit accumsan senectus netus nullam curae, ornare laoreet adipiscing luctus mauris adipiscing pretium eget fermentum, tristique lobortis est ut metus lobortis tortor tincidunt himenaeos habitant quis dictumst proin odio sagittis purus mi, nec taciti vestibulum quis in sit varius lorem sit metus mi.</p>
-                            </div>
-                        </td>
-                        <td class="h3 text-center hidden-xs">262</td>
-                        <td class="h3 text-center hidden-xs hidden-sm">1600</td>
-                        <td class="h3 text-primary text-right">$ 12,320</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <h3 class="h5 font-w600 push-10">
-                                <a class="link-effect" href="javascript:void(0)">Flat Icon Set</a>
-                            </h3>
-                            <div class="push-10">
-                                <span class="label label-success"><i class="fa fa-check"></i> Completed</span>
-                            </div>
-                            <div class="font-s13 text-muted hidden-xs">
-                                <p>Dolor posuere proin blandit accumsan senectus netus nullam curae, ornare laoreet adipiscing luctus mauris adipiscing pretium eget fermentum, tristique lobortis est ut metus lobortis tortor tincidunt himenaeos habitant quis dictumst proin odio sagittis purus mi, nec taciti vestibulum quis in sit varius lorem sit metus mi.</p>
-                            </div>
-                        </td>
-                        <td class="h3 text-center hidden-xs">3</td>
-                        <td class="h3 text-center hidden-xs hidden-sm">148</td>
-                        <td class="h3 text-primary text-right">$ 6,320</td>
-                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
             <div class="border-t">

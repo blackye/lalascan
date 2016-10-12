@@ -6,7 +6,8 @@ __author__ = 'BlackYe.'
 from flask import Blueprint, url_for, redirect, render_template, request, flash, jsonify
 from flask import current_app
 
-from app.services import PolicyService
+from app.services import PolicyService, VulDetailInfo
+from app.models.scanner import Scanner
 from app.forms import LeakInfoForm
 from app.extensions.flask_paginate import Pagination, get_page_args
 
@@ -19,9 +20,76 @@ webscan_module = Blueprint('webscan', __name__)
 def index():
     return redirect(url_for('login.login'))
 
-@webscan_module.route('/webscan/scanner', methods = ['GET', 'POST'])
-def scanner():
-    return render_template("/scanner.html")
+
+@webscan_module.route('/webscan/scanner', defaults = {'page' : 1})
+@webscan_module.route('/webscan/scanner/', defaults = {'page' : 1})
+@webscan_module.route('/webscan/scanner/<int:page>')
+@webscan_module.route('/webscan/scanner/<int:page>/')
+def show_vuldetail(page):
+    _scan = VulDetailInfo.get_scan_task()
+    all_scan = {}
+
+    _scanner = {}
+
+    for _ in _scan:
+
+
+        _scan_task = _[0]
+        _scan_vul_detail = _[1]
+        _leakinfo = _[2]
+
+        single_scan_task = {}
+        single_scan_task['scan_task'] = None
+        single_scan_task['scan_info'] = []
+
+        if all_scan.has_key(_scan_task.id):
+            #scan_info = all_scan[_scan_task.id]['scan_info']
+            __ = (_scan_vul_detail, _leakinfo)
+
+            all_scan[_scan_task.id]['scan_info'].append(__)
+            all_scan[_scan_task.id] = {'scan_task' : _scan_task, 'scan_info' :all_scan[_scan_task.id]['scan_info']}
+            #all_scan[_scan_task.id]['scan_info'].append((_scan_vul_detail, _leakinfo))
+
+            if _leakinfo != None:
+                _scanner[_scan_task.id].add_risk_cnt(int(_leakinfo.risk_level))
+        else:
+
+            single_scan_task['scan_task'] = _scan_task
+            single_scan_task['scan_info'].append((_scan_vul_detail, _leakinfo))
+
+            all_scan[_scan_task.id] = single_scan_task
+
+
+            scanner = Scanner(audit_name = _scan_task.audit_name,
+                              scan_url   = _scan_task.scan_url,
+                              starttime  = _scan_task.starttime,
+                              finishtime = _scan_task.finishtime,
+                              status     = _scan_task.status,
+                              )
+
+            if _leakinfo != None:
+                scanner.add_risk_cnt(int(_leakinfo.risk_level))
+
+            _scanner[_scan_task.id] = scanner
+
+    print _scanner
+
+    '''
+    scanner = Scanner(audit_name = _scan_task.audit_name,
+                      scan_url   = _scan_task.scan_url,
+                      starttime  = _scan_task.starttime,
+                      finishtime = _scan_task.finishtime,
+                      status     = _scan_task.status,
+
+                      )
+
+
+
+    all_scan_task.append(scan_task)
+    '''
+
+    return render_template("/scanner.html", scanner = [p for x , p in _scanner.iteritems()])
+
 
 @webscan_module.route('/webscan/add_task', methods = ['GET', 'POST'])
 def add_task():

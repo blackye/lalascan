@@ -3,8 +3,9 @@
 
 __author__ = 'BlackYe.'
 
-from ...libs.core.globaldata import conf, vulresult, source_result
+from ...libs.core.globaldata import conf, vulresult, source_result, db_audit
 from ...models.auditdb import AuditMysqlDB
+from ...models.scan_vuldetail import ScanVulDetail
 from ...data import Data
 from ...data.resource.domain import Domain
 from ...data.resource.ip import IP
@@ -13,6 +14,7 @@ from ...data.vuln.vulnerability import WebVulnerability
 
 from ...utils.console_utils import get_terminal_size, colorize_substring, colorize
 from ...utils.mytime import MyTime
+from ...utils import _str2bs64
 
 from thirdparty_libs.texttable import Texttable
 from thirdparty_libs.prettytable.prettytable import PrettyTable
@@ -48,7 +50,7 @@ class TextReport():
         #host_count += Database.count(Data.TYPE_RESOURCE, IP.data_subtype)
         #vuln_count  = Database.count(Data.TYPE_VULNERABILITY)
         host_count = 2
-        vuln_count = 3
+        #vuln_count = 3
         print >>self.__fd, "-# %s #- " % self.__colorize("Summary", "yellow")
         print >>self.__fd, ""
         print >>self.__fd, "Audit started:   %s" % self.__colorize(start_time, "yellow")
@@ -56,7 +58,7 @@ class TextReport():
         print >>self.__fd, "Execution time:  %s" % self.__colorize(run_time, "yellow")
         print >>self.__fd, ""
         print >>self.__fd, "Scanned hosts:   %s" % self.__colorize(str(host_count), "yellow")
-        print >>self.__fd, "Vulnerabilities: %s" % self.__colorize(str(vuln_count), "red" if vuln_count else "yellow")
+        #print >>self.__fd, "Vulnerabilities: %s" % self.__colorize(str(vuln_count), "red" if vuln_count else "yellow")
         print >>self.__fd, ""
 
         '''
@@ -166,10 +168,30 @@ class TextReport():
 
                 while vulresult.qsize() > 0:
                     _ = vulresult.get()
-                    table.add_row(
-                         [_.injection_type, _.url, _.vulparam_point, _.payload, _.vul_method, _.vul_risk_desc])
+                    table.add_row([_.injection_type,
+                                   _.url,
+                                   _.vulparam_point,
+                                   _.payload,
+                                   _.vul_method,
+                                   _.vul_risk_desc]
+                                  )
 
                     #audit_db insert scan result into db
+                    vul_detail = ScanVulDetail(st_id          = source_result.task_id,
+                                               sli_id         = _.vul_sli_id,
+                                               url            = _.url,
+                                               vulparam_point = _.vulparam_point,
+                                               method         = _.vul_method,
+                                               payload        = _.payload,
+                                               get_param      = None,
+                                               post_param     = None,
+                                               ori_req_header = _str2bs64(_.vul_response.raw_request.headers.get_headers()),
+                                               ori_resp_header= _str2bs64(str(_.vul_response.headers.get_headers())),
+                                               ori_resp_body  = _str2bs64(_.vul_response.data),
+                                               insert_time    = MyTime.get_current_datetime()
+                                             )
+                    db_audit.session.add(vul_detail)
+                    db_audit.session.commit()
 
                 self.__fix_vul_table_width(table)
                 text = table.draw()

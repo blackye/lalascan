@@ -153,6 +153,9 @@ class HTTP_Headers (object):
     def __str__(self):
         return self.__raw_headers
 
+    #--------------------------------------------------------------------------
+    def get_headers(self):
+        return str(self.__raw_headers)
 
     #--------------------------------------------------------------------------
     def __repr__(self):

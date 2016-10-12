@@ -6,6 +6,8 @@ __author__ = 'BlackYe.'
 from models.policy import SLeakPolicy
 from models.leakinfo import SLeakInfo
 from models.leakinfo import SPluginType
+from models.scanner import STarget
+from models.scanner import SVulDetail
 
 from models import db
 
@@ -22,11 +24,11 @@ class PolicyService(object):
 
     @staticmethod
     def get_policy_by_leakinfo(offset, per_page):
-        return db.session.query(SLeakInfo.leak_name_cn, SLeakPolicy).join(SLeakPolicy, SLeakInfo.id == SLeakPolicy.spt_id).order_by(SLeakPolicy.id.desc()).offset(offset).limit(per_page).all()
+        return db.session.query(SLeakInfo.leak_name_cn, SLeakPolicy).outerjoin(SLeakPolicy, SLeakInfo.id == SLeakPolicy.spt_id).order_by(SLeakPolicy.id.desc()).offset(offset).limit(per_page).all()
 
     @staticmethod
     def get_leakinfo(offset, per_page):
-        all_leakinfo = db.session.query(SPluginType.name, SLeakInfo).join(SLeakInfo, SLeakInfo.spt_id == SPluginType.id).order_by(SLeakInfo.id.desc()).offset(offset).limit(per_page).all()
+        all_leakinfo = db.session.query(SPluginType.name, SLeakInfo).outerjoin(SLeakInfo, SLeakInfo.spt_id == SPluginType.id).order_by(SLeakInfo.id.desc()).offset(offset).limit(per_page).all()
         return [leakinfo[1].to_dict(plugin_type = leakinfo[0]) for leakinfo in all_leakinfo]
 
     @staticmethod
@@ -57,3 +59,12 @@ class PolicyService(object):
         leakinfo = SLeakInfo.query.get(leak_id)
         db.session.delete(leakinfo)
         db.session.commit()
+
+
+
+class VulDetailInfo(object):
+
+    @staticmethod
+    def get_scan_task():
+        vuldetail = db.session.query(STarget, SVulDetail, SLeakInfo).outerjoin(SVulDetail, STarget.id == SVulDetail.st_id).outerjoin(SLeakInfo, SLeakInfo.id == SVulDetail.sli_id).all()
+        return vuldetail
